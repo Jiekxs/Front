@@ -23,7 +23,7 @@ const BrandCard: React.FC<BrandCardProps> = ({ brand }) => {
               {brand.descripcionMarca}
             </Typography>
             <Typography>
-                <img src="../../public/img/KTM-Logo.png" alt="" style={{width:250 }}/>
+                <img src="../../../dist/img/KTM-Logo.png" alt="" style={{width:250 }}/>
             </Typography>
           </CardContent>
           <style>
