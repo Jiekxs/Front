@@ -260,13 +260,13 @@ export const MainPage = () => {
           if (item.cantidad > 1) {
             return { ...item, cantidad: item.cantidad - 1 };
           } else {
-            return null; 
+            return null;
           }
         }
         return item;
       })
-      .filter((item) => item !== null);
-
+      .filter((item) => item !== null) as CartItem[]; // Filtrar elementos null y asignar el tipo CartItem
+  
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -278,7 +278,7 @@ export const MainPage = () => {
       }
       return item;
     });
-
+  
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -287,7 +287,7 @@ export const MainPage = () => {
     const updatedCart = storedCart.filter(
       (item) => item.idProducto !== productId
     );
-
+  
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
