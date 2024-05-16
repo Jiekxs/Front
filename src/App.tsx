@@ -81,6 +81,11 @@ const App = () => {
           path="/pago/detalles"
           element={<UserRoute element={<PaymentView />} />}
         />
+         <Route
+          path="*/dist/*
+          "
+          element={<UserRoute element={<PaymentView />} />}
+        />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
