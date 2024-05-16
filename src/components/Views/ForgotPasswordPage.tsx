@@ -16,7 +16,7 @@ const ForgotPasswordPage = () => {
 
   const handleResetPassword = async (data: any) => {
     try {
-      const response = await fetch("http://localhost:8080/reset-password", {
+      const response = await fetch("https://motographixapi.up.railway.app/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

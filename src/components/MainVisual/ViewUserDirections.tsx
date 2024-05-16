@@ -43,7 +43,7 @@ const UserAddresses: React.FC = () => {
     const fetchUserAddresses = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/direccionesuser/${userId}`
+          `https://motographixapi.up.railway.app/direccionesuser/${userId}`
         );
         if (!response.ok) {
           throw new Error("Error al obtener las direcciones del usuario");
@@ -71,7 +71,7 @@ const UserAddresses: React.FC = () => {
 
   const handleAddAddress = async () => {
     try {
-      const response = await fetch("http://localhost:8080/savedireccion", {
+      const response = await fetch("https://motographixapi.up.railway.app/savedireccion", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const UserAddresses: React.FC = () => {
   const handleConfirmDeleteAddress = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deletedireccion/${selectedAddressToDelete?.idDireccion}`,
+        `https://motographixapi.up.railway.app/deletedireccion/${selectedAddressToDelete?.idDireccion}`,
         {
           method: "DELETE",
         }
@@ -136,7 +136,7 @@ const UserAddresses: React.FC = () => {
   const handleSaveChanges = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/updatedireccion/${selectedAddress?.idDireccion}`,
+        `https://motographixapi.up.railway.app/updatedireccion/${selectedAddress?.idDireccion}`,
         {
           method: "PUT",
           headers: {

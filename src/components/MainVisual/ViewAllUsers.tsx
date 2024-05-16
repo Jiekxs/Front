@@ -64,7 +64,7 @@ export const ViewAllUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users");
+        const response = await fetch("https://motographixapi.up.railway.app/users");
         if (!response.ok) {
           throw new Error("Error al obtener los usuarios");
         }
@@ -119,7 +119,7 @@ export const ViewAllUsers = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deleteuser/${userIdToDelete}`,
+        `https://motographixapi.up.railway.app/deleteuser/${userIdToDelete}`,
         {
           method: "DELETE",
         }
@@ -145,7 +145,7 @@ export const ViewAllUsers = () => {
 
       // Enviar los datos actualizados al servidor
       const response = await fetch(
-        `http://localhost:8080/updateuser/${selectedUserId}`,
+        `https://motographixapi.up.railway.app/updateuser/${selectedUserId}`,
         {
           method: "PUT",
           headers: {
@@ -179,7 +179,7 @@ export const ViewAllUsers = () => {
 
   const handleAddUserSubmit = async (formData: any) => {
     try {
-      const response = await fetch("http://localhost:8080/saveuser", {
+      const response = await fetch("https://motographixapi.up.railway.app/saveuser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -204,7 +204,7 @@ export const ViewAllUsers = () => {
 
   const fetchAddresses = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/direccionesuser/${userId}`);
+      const response = await fetch(`https://motographixapi.up.railway.app/direccionesuser/${userId}`);
       if (!response.ok) {
         throw new Error("Usuario Sin direcciones");
       }

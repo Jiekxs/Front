@@ -31,7 +31,7 @@ const PedidosUsuario: React.FC = () => {
     const fetchPedidos = async () => {
       try {
         const userId = sessionStorage.getItem("userId");
-        const response = await fetch(`http://localhost:8080/pedidosusuario/${userId}`);
+        const response = await fetch(`https://motographixapi.up.railway.app/pedidosusuario/${userId}`);
         if (response.ok) {
           const data = await response.json();
           setPedidos(data);
@@ -48,7 +48,7 @@ const PedidosUsuario: React.FC = () => {
 
   const handlePedidoClick = async (idPedido: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/detallespedido/${idPedido}`);
+      const response = await fetch(`https://motographixapi.up.railway.app/detallespedido/${idPedido}`);
       if (response.ok) {
         const data = await response.json();
         setPedidoSeleccionado(data);

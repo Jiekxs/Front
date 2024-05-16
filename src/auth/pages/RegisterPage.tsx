@@ -20,7 +20,7 @@ const RegisterPage = () => {
     const handleRegister = async (data: any) => {
         try {
             console.log('Datos de registro:', data);
-            const response = await fetch('http://localhost:8080/register', {
+            const response = await fetch('https://motographixapi.up.railway.app/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

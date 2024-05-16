@@ -51,7 +51,7 @@ const ViewAllProducts = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://localhost:8080/productos");
+        const response = await fetch("https://motographixapi.up.railway.app/productos");
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
         }
@@ -66,7 +66,7 @@ const ViewAllProducts = () => {
 
     const fetchModelos = async () => {
       try {
-        const response = await fetch("http://localhost:8080/modelos");
+        const response = await fetch("https://motographixapi.up.railway.app/modelos");
         if (!response.ok) {
           throw new Error("Error al obtener los modelos");
         }
@@ -90,7 +90,7 @@ const ViewAllProducts = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deleteproducto/${productoIdToDelete}`,
+        `https://motographixapi.up.railway.app/deleteproducto/${productoIdToDelete}`,
         {
           method: "DELETE",
         }
@@ -164,7 +164,7 @@ const ViewAllProducts = () => {
       };
 
       const response = await fetch(
-        `http://localhost:8080/updateproducto/${selectedProductId}`,
+        `https://motographixapi.up.railway.app/updateproducto/${selectedProductId}`,
         {
           method: "PUT",
           headers: {
@@ -208,7 +208,7 @@ const ViewAllProducts = () => {
         stock: parseInt(formData.stock),
       };
 
-      const response = await fetch("http://localhost:8080/saveproducto", {
+      const response = await fetch("https://motographixapi.up.railway.app/saveproducto", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

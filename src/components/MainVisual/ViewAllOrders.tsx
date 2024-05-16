@@ -30,7 +30,7 @@ const Pedidos: React.FC = () => {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/pedidos`);
+        const response = await fetch(`https://motographixapi.up.railway.app/pedidos`);
         if (response.ok) {
           const data = await response.json();
           setPedidos(data);
@@ -47,7 +47,7 @@ const Pedidos: React.FC = () => {
 
   const handlePedidoClick = async (idPedido: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/detallespedido/${idPedido}`);
+      const response = await fetch(`https://motographixapi.up.railway.app/detallespedido/${idPedido}`);
       if (response.ok) {
         const data = await response.json();
         setPedidoSeleccionado(data);

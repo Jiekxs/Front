@@ -139,7 +139,7 @@ export const AdminDashboard = () => {
   }, []);
 
   const fetchUser = (userId: string) => {
-    fetch(`http://localhost:8080/finduserid/${userId}`)
+    fetch(`https://motographixapi.up.railway.app/finduserid/${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setUser(data);

@@ -34,7 +34,7 @@ export const ViewAllReviews = () => {
   React.useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch("http://localhost:8080/resenas");
+        const response = await fetch("https://motographixapi.up.railway.app/resenas");
         if (!response.ok) {
           throw new Error("Error al obtener las reseñas");
         }
@@ -59,7 +59,7 @@ export const ViewAllReviews = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deleteresena/${reviewIdToDelete}`,
+        `https://motographixapi.up.railway.app/deleteresena/${reviewIdToDelete}`,
         {
           method: "DELETE",
         }

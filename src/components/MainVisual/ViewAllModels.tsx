@@ -52,7 +52,7 @@ export const ViewAllModels = () => {
   React.useEffect(() => {
     const fetchModelos = async () => {
       try {
-        const response = await fetch("http://localhost:8080/modelos");
+        const response = await fetch("https://motographixapi.up.railway.app/modelos");
         if (!response.ok) {
           throw new Error("Error al obtener los modelos");
         }
@@ -67,7 +67,7 @@ export const ViewAllModels = () => {
 
     const fetchMarcas = async () => {
       try {
-        const response = await fetch("http://localhost:8080/marcas");
+        const response = await fetch("https://motographixapi.up.railway.app/marcas");
         if (!response.ok) {
           throw new Error("Error al obtener las marcas");
         }
@@ -111,7 +111,7 @@ export const ViewAllModels = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deletemodelo/${modeloIdToDelete}`,
+        `https://motographixapi.up.railway.app/deletemodelo/${modeloIdToDelete}`,
         {
           method: "DELETE",
         }
@@ -142,7 +142,7 @@ export const ViewAllModels = () => {
       };
 
       const response = await fetch(
-        `http://localhost:8080/updatemodelo/${selectedModeloId}`,
+        `https://motographixapi.up.railway.app/updatemodelo/${selectedModeloId}`,
         {
           method: "PUT",
           headers: {
@@ -176,7 +176,7 @@ export const ViewAllModels = () => {
         descripcion: formData.descripcion,
       };
   
-      const response = await fetch("http://localhost:8080/savemodelo", {
+      const response = await fetch("https://motographixapi.up.railway.app/savemodelo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

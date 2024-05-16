@@ -43,7 +43,7 @@ export const ViewAllMarcas = () => {
   useEffect(() => {
     const fetchMarcas = async () => {
       try {
-        const response = await fetch("http://localhost:8080/marcas");
+        const response = await fetch("https://motographixapi.up.railway.app/marcas");
         if (!response.ok) {
           throw new Error("Error al obtener las marcas");
         }
@@ -81,7 +81,7 @@ export const ViewAllMarcas = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/deletemarca/${marcaIdToDelete}`, {
+      const response = await fetch(`https://motographixapi.up.railway.app/deletemarca/${marcaIdToDelete}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -98,7 +98,7 @@ export const ViewAllMarcas = () => {
 
   const handleEditSubmit = async (formData: any) => {
     try {
-      const response = await fetch(`http://localhost:8080/updatemarca/${selectedMarcaId}`, {
+      const response = await fetch(`https://motographixapi.up.railway.app/updatemarca/${selectedMarcaId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export const ViewAllMarcas = () => {
 
   const handleAddSubmit = async (formData: any) => {
     try {
-      const response = await fetch("http://localhost:8080/savemarca", {
+      const response = await fetch("https://motographixapi.up.railway.app/savemarca", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

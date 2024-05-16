@@ -23,7 +23,7 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/finduserid/${userId}`);
+        const response = await fetch(`https://motographixapi.up.railway.app/finduserid/${userId}`);
         if (!response.ok) {
           throw new Error("Error al obtener el perfil del usuario");
         }
@@ -49,7 +49,7 @@ const UserProfile: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/updateuser/${userId}`, {
+      const response = await fetch(`https://motographixapi.up.railway.app/updateuser/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

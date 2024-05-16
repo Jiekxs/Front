@@ -216,7 +216,7 @@ export const MainPage = () => {
   }, []);
 
   const fetchUser = (userId: string) => {
-    fetch(`http://localhost:8080/finduserid/${userId}`)
+    fetch(`https://motographixapi.up.railway.app/finduserid/${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setUser(data);
@@ -225,7 +225,7 @@ export const MainPage = () => {
   };
 
   const fetchBrands = () => {
-    fetch("http://localhost:8080/marcas")
+    fetch("https://motographixapi.up.railway.app/marcas")
       .then((response) => response.json())
       .then((data) => {
         setBrands(data);
@@ -234,7 +234,7 @@ export const MainPage = () => {
   };
 
   const fetchModels = () => {
-    fetch("http://localhost:8080/modelos")
+    fetch("https://motographixapi.up.railway.app/modelos")
       .then((response) => response.json())
       .then((data) => {
         setModels(data);
@@ -243,7 +243,7 @@ export const MainPage = () => {
   };
 
   const fetchProducts = () => {
-    fetch("http://localhost:8080/productos")
+    fetch("https://motographixapi.up.railway.app/productos")
       .then((response) => response.json())
       .then((data) => {
         setProducts(data);

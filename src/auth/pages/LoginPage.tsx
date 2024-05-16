@@ -43,7 +43,7 @@ const LoginPage = () => {
   const handleCheckUser = async (username: string, password: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/users/login?email=${username}&password=${password}`,
+        `https://motographixapi.up.railway.app/users/login?email=${username}&password=${password}`,
         {
           method: "GET",
           headers: {
@@ -67,7 +67,7 @@ const LoginPage = () => {
     try {
       await handleCheckUser(data.username, data.password);
 
-      const response = await fetch("http://localhost:8080/loginauth", {
+      const response = await fetch("https://motographixapi.up.railway.app/loginauth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +122,6 @@ const LoginPage = () => {
       <form onSubmit={handleSubmit(handleLogin)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Controller
           name="username"
-          defaultValue="jiekexie5518@gmail.com"
           control={control}
           render={({ field }) => (
             <TextField
@@ -139,7 +138,6 @@ const LoginPage = () => {
         />
         <Controller
           name="password"
-          defaultValue="Admin1234"
           control={control}
           render={({ field }) => (
             <TextField

@@ -49,7 +49,7 @@ const UserReviews: React.FC = () => {
     const fetchUserReviews = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/resenauser/${userId}`
+          `https://motographixapi.up.railway.app/resenauser/${userId}`
         );
         if (!response.ok) {
           throw new Error("Error al obtener las reseñas del usuario");
@@ -77,7 +77,7 @@ const UserReviews: React.FC = () => {
 
   const handleAddReview = async () => {
     try {
-      const response = await fetch("http://localhost:8080/saveresena", {
+      const response = await fetch("https://motographixapi.up.railway.app/saveresena", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +119,7 @@ const UserReviews: React.FC = () => {
   const handleConfirmDeleteReview = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/deleteresena/${selectedReviewToDelete?.idResena}`,
+        `https://motographixapi.up.railway.app/deleteresena/${selectedReviewToDelete?.idResena}`,
         {
           method: "DELETE",
         }
@@ -143,7 +143,7 @@ const UserReviews: React.FC = () => {
   const handleSaveChanges = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/updateresena/${selectedReview?.idResena}`,
+        `https://motographixapi.up.railway.app/updateresena/${selectedReview?.idResena}`,
         {
           method: "PUT",
           headers: {

@@ -60,7 +60,7 @@ const CheckoutView: React.FC = () => {
     const fetchAddresses = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/direccionesuser/${userId}`
+          `https://motographixapi.up.railway.app/direccionesuser/${userId}`
         );
         const data = await response.json();
         setAddresses(data);
@@ -112,7 +112,7 @@ const CheckoutView: React.FC = () => {
       };
 
       // Enviar la solicitud POST para crear el pedido
-      const response = await fetch("http://localhost:8080/savepedido", {
+      const response = await fetch("https://motographixapi.up.railway.app/savepedido", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -136,7 +136,7 @@ const CheckoutView: React.FC = () => {
           };
 
           // Enviar la solicitud POST para crear el detalle del pedido
-          const detailResponse = await fetch("http://localhost:8080/savedetallepedido", {
+          const detailResponse = await fetch("https://motographixapi.up.railway.app/savedetallepedido", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
