@@ -1,0 +1,26 @@
+.user-profile-container {
+    margin: 20px;
+  }
+  
+  .user-profile-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 10%;
+    box-sizing: border-box;
+  }
+  
