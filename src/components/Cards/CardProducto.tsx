@@ -132,7 +132,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
           <CardContent style={{ overflow: "hidden" }}>
             <Typography>
               <img
-                src="/dist/img/KTM-Logo.png"
+                src="./../../../dist/assets/img/KTM-Logo.png"
                 alt=""
                 style={{ width: 250, cursor: "pointer" }}
                 onClick={handleModalOpen}
