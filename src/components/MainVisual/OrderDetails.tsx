@@ -268,7 +268,7 @@ const CheckoutView: React.FC = () => {
         </Button>
         </>
       )}
-
+    
       <br />
       <Link to="/home">
         <Button variant="contained" sx={{ mt: 2 }}>

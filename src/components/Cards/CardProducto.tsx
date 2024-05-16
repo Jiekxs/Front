@@ -53,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
   const fetchResenas = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/resenaproducto/${product.idProducto}`
+        `https://motographixapi.up.railway.app/resenaproducto/${product.idProducto}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -80,7 +80,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
 
   const handleAddReview = async () => {
     try {
-      const response = await fetch("http://localhost:8080/saveresena", {
+      const response = await fetch("https://motographixapi.up.railway.app/saveresena", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
