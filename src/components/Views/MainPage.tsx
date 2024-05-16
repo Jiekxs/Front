@@ -85,7 +85,8 @@ export const MainPage = () => {
   const handleOptionClick = (option: string) => {
     setLoading(true);
     if (option === "Logout") {
-
+      sessionStorage.clear();
+      window.location.href = "/"; 
     } else if (option === "Marcas") {
       fetchBrands();
       setSelectedOption(option);
@@ -460,7 +461,6 @@ export const MainPage = () => {
                   Pagar
                 </Button>
                 </Link>
-               
               </Box>
             </Box>
           </>

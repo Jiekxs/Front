@@ -56,7 +56,7 @@ export const AdminDashboard = () => {
   const handleOptionClick = (option: string) => {
     if (option === "Logout") {
       sessionStorage.clear();
-      window.location.href = "/"; // Redirecciona al usuario a la página de inicio
+      window.location.href = "/"; 
     } else {
       setSelectedOption(option);
       setOpen(false);
