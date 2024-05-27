@@ -169,7 +169,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
                 src="/public/img/KTM-Logo.png"
                 alt=""
                 style={{ width: 250 , cursor: "pointer" }}
-                
               />
             </Typography>
             <Rating
