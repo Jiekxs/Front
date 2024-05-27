@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Button, Modal } from '@mui/material';
 
 interface Pedido {
   idPedido: number;
+  idUsuario: string;
   fechaPedido: string;
   estado: string;
   total_pedido: number;
@@ -22,8 +23,15 @@ interface DetallePedido {
   subtotal: number;
 }
 
+interface Usuario {
+  idUsuario: string;
+  nombre: string;
+  email: string;
+}
+
 const Pedidos: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [usuarios, setUsuarios] = useState<Record<string, Usuario>>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<DetallePedido[]>([]);
 
@@ -45,6 +53,28 @@ const Pedidos: React.FC = () => {
     fetchPedidos();
   }, []);
 
+  useEffect(() => {
+    const fetchUsuario = async (idUsuario: string) => {
+      try {
+        const response = await fetch(`https://motographixapi.up.railway.app/finduserid/${idUsuario}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUsuarios(prevUsuarios => ({ ...prevUsuarios, [idUsuario]: data }));
+        } else {
+          throw new Error('Error al obtener los detalles del usuario');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    pedidos.forEach(pedido => {
+      if (!usuarios[pedido.idUsuario]) {
+        fetchUsuario(pedido.idUsuario);
+      }
+    });
+  }, [pedidos, usuarios]);
+
   const handlePedidoClick = async (idPedido: number) => {
     try {
       const response = await fetch(`https://motographixapi.up.railway.app/detallespedido/${idPedido}`);
@@ -62,12 +92,15 @@ const Pedidos: React.FC = () => {
 
   return (
     <div style={{ margin: '0 auto', maxWidth: '1200px', padding: '0 20px' }}>
-      <Typography variant="h4" gutterBottom>Pedidos del Usuario</Typography>
+      <Typography variant="h4" gutterBottom>Pedidos</Typography>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
         {pedidos.map(pedido => (
           <Card key={pedido.idPedido}>
             <CardContent>
               <Typography variant="h6" gutterBottom>ID del Pedido: {pedido.idPedido}</Typography>
+              <Typography color="textSecondary" gutterBottom>
+                Cliente: {usuarios[pedido.idUsuario] ? `${usuarios[pedido.idUsuario].nombre} (${usuarios[pedido.idUsuario].email})` : 'Cargando...'}
+              </Typography>
               <Typography color="textSecondary" gutterBottom>Fecha del Pedido: {new Date(pedido.fechaPedido).toLocaleString()}</Typography>
               <Typography color="textSecondary" gutterBottom>Estado: {pedido.estado}</Typography>
               <Typography color="textSecondary" gutterBottom>Total del Pedido: ${pedido.total_pedido}</Typography>

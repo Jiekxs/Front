@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Alert } from '@mui/material';
 import {
   Box,
   Button,
@@ -62,6 +63,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
     } catch (error) {}
   };
 
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
   const totalResenas = resenas.length;
   const sumaCalificaciones = resenas.reduce(
     (acumulador, resena) => acumulador + resena.calificacion,
@@ -104,7 +127,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
       console.error("Error al enviar la reseña:", error);
     }
   };
-
+  
   const handleAddToCart = () => {
     const storedCart = sessionStorage.getItem("cart");
     const currentCart = storedCart ? JSON.parse(storedCart) : [];
@@ -115,27 +138,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
       const updatedCart = [...currentCart];
       updatedCart[existingProductIndex].cantidad += 1;
       sessionStorage.setItem("cart", JSON.stringify(updatedCart));
-      console.log("Cantidad de producto actualizada en la cesta:", product);
+      showAlert('info', `Cantidad de producto actualizada en la cesta: ${product.nombre}`);
+
     } else {
       const updatedCart = [...currentCart, { ...product, cantidad: 1 }];
       sessionStorage.setItem("cart", JSON.stringify(updatedCart));
       console.log("Producto añadido a la cesta:", product);
+      showAlert('success', `Producto añadido a la cesta:: ${product.nombre}`);
+
     }
 
   };
   
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} style={{ marginBottom: 0 }}>
+    <>
+    <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} style={{ marginBottom: 0 }} >
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <Card sx={{ minHeight: 250, flexGrow: 1 }}>
+        <Card sx={{ minHeight: 250, flexGrow: 1}} >
           <CardContent style={{ overflow: "hidden" }}>
-            <Typography>
+            <Typography onClick={handleModalOpen}>
               <img
-                src="./../../../dist/assets/img/KTM-Logo.png"
+                src="/public/img/KTM-Logo.png"
                 alt=""
-                style={{ width: 250, cursor: "pointer" }}
-                onClick={handleModalOpen}
+                style={{ width: 250 , cursor: "pointer" }}
+                
               />
             </Typography>
             <Rating
@@ -254,6 +288,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
         </Box>
       </Modal>
     </Grid>
+    </>
+    
   );
 };
 

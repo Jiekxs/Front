@@ -308,7 +308,7 @@ export const MainPage = () => {
               }}
             >
               <img
-                src="./../../../dist/assets/img/Logo.png"
+                src="/public/img/Logo.png"
                 alt="LogoApp"
                 style={{ width: "300px" }}
               />

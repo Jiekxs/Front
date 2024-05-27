@@ -33,7 +33,7 @@ const LoginPage = () => {
     setAlertData({ open: true, severity, message });
     setTimeout(() => {
       setAlertData({ ...alertData, open: false });
-    }, 1500);
+    }, 2000);
   };
 
   const handleCloseAlert = () => {
