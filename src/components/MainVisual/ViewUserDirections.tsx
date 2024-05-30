@@ -11,6 +11,7 @@ import {
   TextField,
   CircularProgress,
   Paper,
+  Alert,
 } from "@mui/material";
 
 interface Address {
@@ -21,19 +22,21 @@ interface Address {
   pais: string;
 }
 
+const initialAddressState: Address = {
+  idDireccion: 0,
+  direccion: "",
+  ciudad: "",
+  codigoPostal: "",
+  pais: "",
+};
+
 const UserAddresses: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [editedAddress, setEditedAddress] = useState<Address>({
-    idDireccion: 0,
-    direccion: "",
-    ciudad: "",
-    codigoPostal: "",
-    pais: "",
-  });
+  const [editedAddress, setEditedAddress] = useState<Address>(initialAddressState);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [selectedAddressToDelete, setSelectedAddressToDelete] =
     useState<Address | null>(null);
@@ -47,13 +50,15 @@ const UserAddresses: React.FC = () => {
           `https://motographixapi.up.railway.app/direccionesuser/${userId}`
         );
         if (!response.ok) {
+          showAlert('error', 'Error al obtener las direcciones del usuario');
+
           throw new Error("Error al obtener las direcciones del usuario");
         }
         const addressesData = await response.json();
         setAddresses(addressesData);
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener las direcciones del usuario:", error);
+        showAlert('error', 'Error al obtener las direcciones del usuario');
         setLoading(false);
       }
     };
@@ -62,6 +67,7 @@ const UserAddresses: React.FC = () => {
   }, [userId]);
 
   const handleOpenModal = () => {
+    setEditedAddress(initialAddressState);
     setOpenModal(true);
   };
 
@@ -69,6 +75,32 @@ const UserAddresses: React.FC = () => {
     setOpenModal(false);
     setEditModalOpen(false);
   };
+
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
+
 
   const handleAddAddress = async () => {
     try {
@@ -85,13 +117,17 @@ const UserAddresses: React.FC = () => {
         }),
       });
       if (!response.ok) {
+        showAlert('error', 'Error al agregar la dirección');
         throw new Error("Error al agregar la dirección");
       }
       const newAddress = await response.json();
       setAddresses([...addresses, newAddress]);
+      setEditedAddress(initialAddressState);
+      showAlert('success', 'Dirección agregada');
+
       setOpenModal(false);
     } catch (error) {
-      console.error("Error al agregar la dirección:", error);
+      showAlert('error', 'Error al agregar la dirección');
       setOpenModal(false);
     }
   };
@@ -101,6 +137,7 @@ const UserAddresses: React.FC = () => {
     setEditedAddress(address);
     setEditModalOpen(true);
   };
+
   const handleOpenDeleteModal = (address: Address) => {
     setSelectedAddressToDelete(address);
     setDeleteModalOpen(true);
@@ -120,6 +157,9 @@ const UserAddresses: React.FC = () => {
         }
       );
       if (!response.ok) {
+
+        showAlert('error', 'Error al eliminar la dirección');
+
         throw new Error("Error al eliminar la dirección");
       }
       const updatedAddresses = addresses.filter(
@@ -127,9 +167,11 @@ const UserAddresses: React.FC = () => {
           address.idDireccion !== selectedAddressToDelete?.idDireccion
       );
       setAddresses(updatedAddresses);
+      showAlert('success', 'Dirección eliminada');
+
       setDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error al eliminar la dirección:", error);
+      showAlert('error', 'Error al eliminar la dirección');
       setDeleteModalOpen(false);
     }
   };
@@ -152,6 +194,8 @@ const UserAddresses: React.FC = () => {
         }
       );
       if (!response.ok) {
+        showAlert('error', 'Error al actualizar la dirección');
+
         throw new Error("Error al actualizar la dirección");
       }
       const updatedAddress = await response.json();
@@ -161,9 +205,11 @@ const UserAddresses: React.FC = () => {
           : address
       );
       setAddresses(updatedAddresses);
+      showAlert('success', 'Dirección actualizada');
+
       setEditModalOpen(false);
     } catch (error) {
-      console.error("Error al actualizar la dirección:", error);
+      showAlert('error', 'Error al actualizar la dirección');
       setEditModalOpen(false);
     }
   };
@@ -180,8 +226,13 @@ const UserAddresses: React.FC = () => {
 
   return (
     <Paper sx={{ width: "60%", margin: "auto", padding: 5 }}>
-     
-
+      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
       <Box my={4}>
         <Typography variant="h4">Direcciones</Typography>
         <Button variant="contained" color="primary" onClick={handleOpenModal}>
@@ -232,8 +283,51 @@ const UserAddresses: React.FC = () => {
       </Box>
 
       <Dialog open={openModal} onClose={handleCloseModal}>
-        {/* Contenido del modal para agregar dirección */}
+        <DialogTitle>Agregar Nueva Dirección</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Calle"
+            name="direccion"
+            value={editedAddress.direccion}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Ciudad"
+            name="ciudad"
+            value={editedAddress.ciudad}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="C.P"
+            name="codigoPostal"
+            value={editedAddress.codigoPostal}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="País"
+            name="pais"
+            value={editedAddress.pais}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleAddAddress} color="primary">
+            Agregar
+          </Button>
+        </DialogActions>
       </Dialog>
+      
       <Dialog open={editModalOpen} onClose={handleCloseModal}>
         <DialogTitle>Editar Dirección</DialogTitle>
         <DialogContent>
@@ -279,51 +373,7 @@ const UserAddresses: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Agregar Nueva Dirección</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Calle"
-            name="direccion"
-            value={editedAddress.direccion}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Ciudad"
-            name="ciudad"
-            value={editedAddress.ciudad}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="C.P"
-            name="codigoPostal"
-            value={editedAddress.codigoPostal}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="País"
-            name="pais"
-            value={editedAddress.pais}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleAddAddress} color="primary">
-            Agregar
-          </Button>
-        </DialogActions>
-      </Dialog>
+
       <Dialog open={deleteModalOpen} onClose={handleCloseDeleteModal}>
         <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>

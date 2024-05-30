@@ -33,7 +33,7 @@ import zIndex from "@mui/material/styles/zIndex";
 
 interface PaintProps {}
 
-const SIZE = 650;
+const SIZE = 450;
 
 const downloadURI = (uri: string | undefined, name: string) => {
   const link = document.createElement("a");
@@ -252,8 +252,8 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
   }, []);
 
   return (
-<Box m={4} sx={{ width: "60vw" }}>
-    <Paper sx={{ width: "90%", margin: "auto", padding: 5 }}>
+<Box m={4} sx={{ width: "100%", height: "100%" }}>
+      <Paper sx={{ width: "90%", margin: "auto", padding: 5 }}>
     <Flex justifyContent={"space-between"} alignItems="center">
         <ButtonGroup size="sm" isAttached variant="solid" sx={{ zIndex: 999 }}>
           {PAINT_OPTIONS.map(({ id, label, icon }) => (
@@ -317,28 +317,28 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
       </Flex>
 
       <Box
-        zIndex={1}
-        width={`${SIZE *1.55}px`}
-        height={`${SIZE }px`}
-        border="5px solid gray"
-        borderRadius="5px"
-        mt={4}
-        overflow="auto"
+      zIndex={1}
+      height={"100%"} 
+      width={"100%"} 
+      border="5px solid gray"
+      borderRadius="5px"
+      mt={4}
+      overflow="auto"
+    >
+      <Stage
+        height={window.innerHeight * 0.7} 
+        width={window.innerWidth /1.8} 
+        ref={stageRef}
+        onMouseUp={onStageMouseUp}
+        onMouseDown={onStageMouseDown}
+        onMouseMove={onStageMouseMove}
       >
-        <Stage
-          height={SIZE}
-          width={SIZE*1.55}
-          ref={stageRef}
-          onMouseUp={onStageMouseUp}
-          onMouseDown={onStageMouseDown}
-          onMouseMove={onStageMouseMove}
-        >
           <Layer>
             <KonvaRect
               x={0}
               y={0}
-              height={SIZE}
-              width={SIZE*1.55}
+              height={window.innerHeight * 0.7} 
+              width={window.innerWidth /1.8} 
               fill="white"
               id="bg"
             />

@@ -99,7 +99,7 @@ export const MainPage = () => {
       fetchProducts();
       setSelectedOption(option);
       setOpen(false);
-    } else if (option === "Diseñar") {
+    } else if (option === "Personalizar") {
       setSelectedOption(option);
       setOpen(false);
     } else {
@@ -146,7 +146,7 @@ export const MainPage = () => {
             </Grid>
           </Paper>
         );
-      case "Diseñar":
+      case "Personalizar":
         return (
           <Paper
             sx={{
@@ -377,7 +377,6 @@ export const MainPage = () => {
                 display: { xs: "none", md: "flex" },
               }}
             >
-              
               <img
                 src="/public/img/Logo.png"
                 alt="LogoApp"
@@ -422,8 +421,8 @@ export const MainPage = () => {
             <Button onClick={() => handleOptionClick("Productos")}>
               Productos
             </Button>
-            <Button onClick={() => handleOptionClick("Diseñar")}>
-              Diseñar
+            <Button onClick={() => handleOptionClick("Personalizar")}>
+              Personalizar
             </Button>
 
             <Badge badgeContent={totalItemsInCart} color="primary">
