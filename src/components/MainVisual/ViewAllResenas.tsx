@@ -4,10 +4,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+
 import CircularProgress from "@mui/material/CircularProgress";
-import { Rating } from "@mui/material";
+import { Paper, Rating } from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
@@ -94,24 +93,26 @@ export const ViewAllReviews = () => {
         />
       ),
     },
-    { field: "comentario", headerName: "Comentario", width: 400 },
-    { field: "fechaResena", headerName: "Fecha de cración", width: 400 },
+    { field: "comentario", headerName: "Comentario",flex:1 },
+    { field: "fechaResena", headerName: "Fecha de cración",flex:1 },
     {
       field: "usuario",
       headerName: "Ususario",
-      width: 400,
+     flex:1,
       renderCell: (params: GridRenderCellParams) => params.row.usuario.nombre,
     },
     {
       field: "producto",
       headerName: "Producto",
-      width: 400,
+     flex:1,
       renderCell: (params: GridRenderCellParams) => params.row.producto.nombre,
     },
   ];
 
   return (
     <>
+      <Paper sx={{ width: "90%", margin: "auto", padding:5 }}>
+
       <h2>Reseñas</h2>
       {loading ? (
         <Box
@@ -125,7 +126,7 @@ export const ViewAllReviews = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ height: 400, width: "100%" }}>
+        <div style={{ height: "auto", width: "100%" }}>
           <DataGrid
             rows={reviews}
             columns={columns}
@@ -141,6 +142,7 @@ export const ViewAllReviews = () => {
           />
         </div>
       )}
+      </Paper>
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}

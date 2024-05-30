@@ -7,10 +7,11 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TextField } from "@mui/material";
+import { TextField, Paper, IconButton, Alert } from '@mui/material';
 import { Controller, useForm } from "react-hook-form";
 import { vestResolver } from "@hookform/resolvers/vest";
 import { FormValidation } from "../../auth/pages/Validations/MarcaValidate";
+
 
 const style = {
   position: "absolute" as "absolute",
@@ -40,18 +41,45 @@ export const ViewAllMarcas = () => {
     resolver: vestResolver(FormValidation),
   });
 
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
+
   useEffect(() => {
     const fetchMarcas = async () => {
       try {
         const response = await fetch("https://motographixapi.up.railway.app/marcas");
         if (!response.ok) {
+          showAlert('error', 'Error al obtener las marcas');
+
           throw new Error("Error al obtener las marcas");
         }
         const data = await response.json();
         setMarcas(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener las marcas:", error);
+        showAlert('error', 'Error al obtener las marcas');
         setLoading(false);
       }
     };
@@ -85,14 +113,20 @@ export const ViewAllMarcas = () => {
         method: "DELETE",
       });
       if (!response.ok) {
+        showAlert('error', 'Error al borrar la marca');
         throw new Error("Error al eliminar la marca");
       }
+      
+      showAlert('success', 'Marca eliminada');
+
       const updatedMarcas = marcas.filter((marca) => marca.idMarca !== marcaIdToDelete);
       setMarcas(updatedMarcas);
+    
     } catch (error) {
-      console.error("Error al eliminar la marca:", error);
+      showAlert('error', 'Error al borrar la marca');
     } finally {
       setOpenModal(false);
+   
     }
   };
 
@@ -106,15 +140,19 @@ export const ViewAllMarcas = () => {
         body: JSON.stringify(formData),
       });
       if (!response.ok) {
+        showAlert('error', 'Error al actualizar la marca');
+
         throw new Error("Error al actualizar la marca");
       }
       const updatedMarca = await response.json();
       const updatedMarcas = marcas.map((marca) => (marca.idMarca === selectedMarcaId ? updatedMarca : marca));
       setMarcas(updatedMarcas);
+      showAlert('success', 'Marca actualizada');
+
       setOpenEditModal(false);
-      reset(); // Resetea el formulario después de la actualización exitosa
+      reset(); 
     } catch (error) {
-      console.error("Error al actualizar la marca:", error);
+      showAlert('error', 'Error al actualizar la marca');
     }
   };
 
@@ -128,14 +166,19 @@ export const ViewAllMarcas = () => {
         body: JSON.stringify(formData),
       });
       if (!response.ok) {
+        showAlert('error', 'Error al agregar la marca');
+
         throw new Error("Error al agregar la marca");
       }
       const newMarca = await response.json();
       setMarcas([...marcas, newMarca]);
+      showAlert('success', 'Marca agregada');
+
       setOpenAddModal(false);
-      reset(); // Resetea el formulario después de agregar una nueva marca exitosamente
+      reset(); 
+     
     } catch (error) {
-      console.error("Error al agregar la marca:", error);
+      showAlert('error', 'Error al agregar la marca');
     }
   };
 
@@ -145,33 +188,43 @@ export const ViewAllMarcas = () => {
   ];
 
   const columns: GridColDef[] = [
-    { field: "nombreMarca", headerName: "Nombre", width: 130 },
-    { field: "descripcionMarca", headerName: "Descripción", width: 500 },
+    { field: "nombreMarca", headerName: "Nombre", flex:0.3 },
+    { field: "descripcionMarca", headerName: "Descripción",flex:2 },
     {
       field: "editar",
-      headerName: "Editar",
-      width: 100,
+      headerName: "Editar",flex:0.15,
       renderCell: (params: GridRenderCellParams) => (
-        <button onClick={() => handleEdit(params.row.idMarca)}>
+        <IconButton onClick={() => handleEdit(params.row.idMarca)}>
           <EditIcon />
-        </button>
+        </IconButton>
       ),
     },
     {
       field: "borrar",
-      headerName: "Eliminar",
-      width: 100,
+      headerName: "Eliminar",flex:0.15,
       renderCell: (params: GridRenderCellParams) => (
-        <button onClick={() => handleDelete(params.row.idMarca, params.row.nombre)}>
+        <IconButton onClick={() => handleDelete(params.row.idMarca, params.row.nombre)}>
           <DeleteIcon />
-        </button>
+        </IconButton>
       ),
     },
   ];
 
   return (
-    <>
+    <>  
+    
+      <Paper sx={{ width: "90%", margin: "auto", padding:5 }}>
+      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
       <h2>Marcas</h2>
+      <Button variant="contained" color="primary" onClick={handleAdd}>
+        Agregar Marca
+      </Button>
       {loading ? (
         <Box
           sx={{
@@ -184,7 +237,7 @@ export const ViewAllMarcas = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ height: 400, width: "100%" }}>
+        <div style={{ height: "auto", width: "100%" }}>
           <DataGrid
             rows={marcas.map((marca, index) => ({ ...marca, id: index + 1 }))}
             columns={columns}
@@ -199,9 +252,8 @@ export const ViewAllMarcas = () => {
           />
         </div>
       )}
-      <Button variant="contained" color="primary" onClick={handleAdd}>
-        Agregar Marca
-      </Button>
+   
+      </Paper>
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}

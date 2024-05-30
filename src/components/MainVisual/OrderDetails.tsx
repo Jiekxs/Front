@@ -10,6 +10,7 @@ import {
   FormControl,
   FormLabel,
   CircularProgress,
+  Paper,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -39,9 +40,10 @@ interface Product {
 }
 
 const paymentMethods = [
-  { id: "card", label: "Credit Card" },
+  { id: "card", label: "Tarjeta de crédito" },
   { id: "paypal", label: "PayPal" },
-  { id: "bank", label: "Bank Transfer" },
+  { id: "bank", label: "Transferencia" },
+  { id: "contrareembolso", label: "Contrareembolso" },
 ];
 
 const CheckoutView: React.FC = () => {
@@ -92,25 +94,52 @@ const CheckoutView: React.FC = () => {
     setSelectedPaymentMethod(event.target.value);
   };
 
+  const addDays = (date: string | number | Date, days: number) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+  
+  const formatDate = (date: { getFullYear: () => any; getMonth: () => number; getDate: () => any; }) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const currentDate = new Date();
+  const deliveryDate = addDays(currentDate, 7);
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleConfirm = async () => {
     if (!selectedAddress || !selectedPaymentMethod) {
-      // Si no se ha seleccionado dirección o método de pago, no hacer nada
       return;
     }
-
+  
+    setIsLoading(true);
+  
     try {
+      const selectedAddressObject = addresses.find(
+        (address) => address.idDireccion === selectedAddress
+      );
+  
+      if (!selectedAddressObject) {
+        console.error("Dirección no encontrada");
+        setIsLoading(false);
+        return;
+      }
+  
       // Crear el objeto de pedido
       const orderData = {
         idUsuario: parseInt(userId || "0", 10),
         estado: "pendiente",
         total_pedido: total,
-        direccionEnvio: addresses.find(
-          (address) => address.idDireccion === selectedAddress
-        )?.direccion || "",
+        direccionEnvio: `${selectedAddressObject.direccion}, ${selectedAddressObject.ciudad}, ${selectedAddressObject.pais}, ${selectedAddressObject.codigoPostal}`,
         formaPago: selectedPaymentMethod,
-        fechaEntrega: ""
+        fechaEntrega: formatDate(deliveryDate)
       };
-
+  
       // Enviar la solicitud POST para crear el pedido
       const response = await fetch("https://motographixapi.up.railway.app/savepedido", {
         method: "POST",
@@ -119,14 +148,14 @@ const CheckoutView: React.FC = () => {
         },
         body: JSON.stringify(orderData)
       });
-
+  
       if (response.ok) {
         console.log("Pedido creado correctamente.");
-
+  
         // Obtener el ID del pedido recién creado
         const order = await response.json();
         const orderId = order.idPedido;
-
+  
         // Crear un detalle de pedido para cada producto en la cesta
         for (const product of storedCart) {
           const detailData = {
@@ -134,7 +163,7 @@ const CheckoutView: React.FC = () => {
             idProducto: product.idProducto,
             cantidad: product.cantidad
           };
-
+  
           // Enviar la solicitud POST para crear el detalle del pedido
           const detailResponse = await fetch("https://motographixapi.up.railway.app/savedetallepedido", {
             method: "POST",
@@ -143,20 +172,20 @@ const CheckoutView: React.FC = () => {
             },
             body: JSON.stringify(detailData)
           });
-
+  
           if (detailResponse.ok) {
             console.log(`Detalle de pedido para el producto ${product.idProducto} creado correctamente.`, detailData);
           } else {
             console.error(`Error al crear el detalle de pedido para el producto ${product.idProducto}:`, detailResponse.statusText);
           }
         }
-
+  
         // Marcar que se ha creado un pedido en esta sesión
         sessionStorage.setItem("orderCreated", "true");
-
+  
         // Vaciar la cesta
         sessionStorage.removeItem("cart");
-
+  
         // Redirigir al usuario a la página de inicio
         window.location.href = "/home";
       } else {
@@ -164,8 +193,11 @@ const CheckoutView: React.FC = () => {
       }
     } catch (error) {
       console.error("Error al crear el pedido:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   if (loading) {
     return (
@@ -192,7 +224,8 @@ const CheckoutView: React.FC = () => {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Paper sx={{ width: "60%", margin: "auto", padding: 5,marginTop:5 }}>
+
       <Typography variant="h6" gutterBottom>
         Elige una Dirección
       </Typography>
@@ -229,15 +262,8 @@ const CheckoutView: React.FC = () => {
           ))}
         </RadioGroup>
       </FormControl>
-      <Button
-        variant="contained"
-        onClick={handleConfirm}
-        disabled={!selectedAddress || !selectedPaymentMethod}
-        sx={{ mt: 2 }}
-      >
-        Confirmar
-      </Button>
-      {showProducts && (
+   
+     
         <>
           <Divider sx={{ my: 3 }} />
           <Typography variant="h6" gutterBottom>
@@ -263,19 +289,28 @@ const CheckoutView: React.FC = () => {
               Total: {total.toFixed(2)}€
             </Typography>
           )}
-           <Button variant="contained" sx={{ mt: 2 }}>
-          Confirmar Pedido
-        </Button>
         </>
-      )}
-    
+      
+     
       <br />
       <Link to="/home">
         <Button variant="contained" sx={{ mt: 2 }}>
           Volver
         </Button>
       </Link>
-    </Box>
+      {isLoading ? (
+      <CircularProgress />
+    ) : (
+      <Button
+      variant="contained"
+      onClick={handleConfirm}
+      disabled={!selectedAddress || !selectedPaymentMethod}
+      sx={{ mt: 2 }}
+    >
+      Confirmar
+    </Button>
+    )}
+    </Paper>
   );
 };
 

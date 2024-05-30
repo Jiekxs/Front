@@ -35,16 +35,6 @@ export const FormValidation = create((data = {}) => {
     });
 
 
-    //Email
-    test('email', 'El correo electrónico es requerido', () => {
-        enforce(data.email).isNotEmpty().isNotBlank();
-    });
-    
-    test('email', 'Formato de correo electrónico inválido', () => {
-        enforce(data.email).matches(/^\S+@\S+\.\S+$/, 'Formato de correo electrónico inválido');
-    });
-
-
     //Telefono
     test('telefono', 'El telefono es requerido', () => {
         enforce(data.telefono).isNotEmpty().isNotBlank();
@@ -78,15 +68,15 @@ export const FormValidation = create((data = {}) => {
         enforce(generoInput).matches(/^(Cliente|Mecanico)$/, 'Válido: Cliente / Mecanico');
     });
 
-    // test('contrasena', 'La contraseña es requerida', () => {
-    //     enforce(data.contrasena).isNotEmpty();
-    // });
+    test('contrasena', 'La contraseña es requerida', () => {
+        enforce(data.contrasena).isNotEmpty();
+    });
 
-    // test('contrasena', 'No puede tener espacios en blanco', () => {
-    //     enforce(data.contrasena).isNotBlank();
-    // });
+    test('contrasena', 'No puede tener espacios en blanco', () => {
+        enforce(data.contrasena).isNotBlank();
+    });
 
-    // test('contrasena', 'Debe tener al menos 8 caracteres', () => {
-    //     enforce(data.contrasena).longerThanOrEquals(8, 'Debe tener al menos 8 caracteres');
-    // });
+    test('contrasena', 'Debe tener al menos 8 caracteres', () => {
+        enforce(data.contrasena).longerThanOrEquals(8, 'Debe tener al menos 8 caracteres');
+    });
 });

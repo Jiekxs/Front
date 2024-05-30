@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Alert, Paper } from '@mui/material';
 import {
   Box,
   Button,
@@ -11,6 +12,10 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+
+import { FormValidation } from "../../auth/pages/Validations/EditUserValidateProfile";
+import { Controller, useForm } from "react-hook-form";
+import { vestResolver } from "@hookform/resolvers/vest";
 
 const UserProfile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -39,6 +44,35 @@ const UserProfile: React.FC = () => {
     fetchUserProfile();
   }, [userId]);
 
+  useEffect(() => {
+    FormValidation.reset(); 
+  }, []);
+
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser((prevUser: any) => ({
@@ -47,7 +81,7 @@ const UserProfile: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleUpdate = async () => {
     try {
       const response = await fetch(`https://motographixapi.up.railway.app/updateuser/${userId}`, {
         method: 'PUT',
@@ -57,10 +91,12 @@ const UserProfile: React.FC = () => {
         body: JSON.stringify(user),
       });
       if (!response.ok) {
+        showAlert('error', 'Error al actualizar los datos del usuario');
         throw new Error('Error al actualizar los datos del usuario');
       }
+      showAlert('success', 'Datos del usuario actualizados');
     } catch (error) {
-      console.error('Error al actualizar los datos del usuario:', error);
+      showAlert('error', 'Error al actualizar los datos del usuario');
     }
   };
 
@@ -74,11 +110,9 @@ const UserProfile: React.FC = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      // Aquí puedes enviar la solicitud de eliminar cuenta al servidor
-      console.log("Solicitud de eliminar cuenta enviada");
       setOpenModal(false); // Cierra la ventana modal después de enviar la solicitud
     } catch (error) {
-      console.error('Error al eliminar la cuenta:', error);
+      showAlert('error', 'Error al eliminar cuenta');
       setOpenModal(false); // Cierra la ventana modal en caso de error
     }
   };
@@ -88,6 +122,14 @@ const UserProfile: React.FC = () => {
   };
 
   return (
+    <Paper sx={{ width: "70%", margin: "auto", padding:5 }}>
+<div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
     <Container maxWidth="md">
       <Box my={4}>
         <Typography variant="h4">Perfil de Usuario</Typography>
@@ -151,7 +193,7 @@ const UserProfile: React.FC = () => {
                   value={user?.fechaNacimiento || ''}
                   onChange={handleInputChange}
                   fullWidth
-                  margin="normal"
+                  margin="normal" 
                 />
                 <TextField
                   label="Género"
@@ -164,16 +206,18 @@ const UserProfile: React.FC = () => {
               </Box>
             </Box>
             <Box mt={2}>
-              <Button variant="contained" color="primary" onClick={handleSubmit}>
+              <Button variant="contained" color="primary" onClick={(handleUpdate)}>
                 Guardar Cambios
               </Button>
-              <Button variant="contained" color="secondary" onClick={handleOpenModal}>
+              <Button variant="contained" color="error" onClick={handleOpenModal}>
                 Eliminar Cuenta
               </Button>
             </Box>
           </Box>
         )}
       </Box>
+        
+
       <Dialog open={openModal} onClose={handleCloseModal}>
         <DialogTitle>Eliminar Cuenta</DialogTitle>
         <DialogContent>
@@ -189,6 +233,8 @@ const UserProfile: React.FC = () => {
         </DialogActions>
       </Dialog>
     </Container>
+
+    </Paper>
   );
 };
 

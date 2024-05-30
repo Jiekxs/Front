@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, Paper } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useForm, Controller } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -40,6 +40,8 @@ const ForgotPasswordPage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '90vh' }}>
+<Paper sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',height:'auto', width:'50vh', padding:5, borderRadius:"25px"}}>
+
       <h1 style={{ marginBottom: '20px' }}>¿Olvidaste tu contraseña?</h1>
       {success && (
         <Alert severity="success" style={{ marginBottom: '20px' }}>
@@ -79,6 +81,7 @@ const ForgotPasswordPage = () => {
         </Button>
       </form>
       <Link to="/" style={{ marginBottom: '20px' }}>Volver al inicio de sesión</Link>
+      </Paper>
     </div>
   );
 };

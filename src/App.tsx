@@ -13,6 +13,7 @@ import PageNotFound from "./components/Views/PageNotFound";
 import ForgotPasswordPage from "./components/Views/ForgotPasswordPage";
 import CartView from "./components/MainVisual/CartView";
 import PaymentView from "./components/MainVisual/OrderDetails";
+import { WorkerDashboard } from "./components/Views/WorkerDashboard";
 
 const App = () => {
   const getUserRole = () => {
@@ -28,6 +29,10 @@ const App = () => {
     return getUserRole() === "admin";
   };
 
+  const isWorker = () => {
+    return getUserRole() === "mecanico";
+  };
+
   const isUser= () => {
     return getUserRole() === "cliente";
   };
@@ -36,7 +41,7 @@ const App = () => {
     element,
     ...rest
   }) => {
-    return isUser()||isAdmin() ? element : <Navigate to="*" replace />;
+    return isUser()||isAdmin()||isWorker() ? element : <Navigate to="*" replace />;
   };
 
   const AdminRoute: React.FC<{ element: React.ReactNode }> = ({
@@ -44,6 +49,13 @@ const App = () => {
     ...rest
   }) => {
     return isAdmin() ? element : <Navigate to="*" replace />;
+  };
+
+  const WorkerRoute: React.FC<{ element: React.ReactNode }> = ({
+    element,
+    ...rest
+  }) => {
+    return isWorker()||isAdmin() ? element : <Navigate to="*" replace />;
   };
 
   const ProtectedLoginRoute: React.FC<{ element: React.ReactNode }> = ({
@@ -74,21 +86,16 @@ const App = () => {
         />
 
         <Route
+          path="/worker/dashboard"
+          element={<WorkerRoute element={<WorkerDashboard />} />}
+        />
+
+        <Route
           path="/home"
           element={<UserRoute element={<MainPage />} />}
         />
          <Route
           path="/pago/detalles"
-          element={<UserRoute element={<PaymentView />} />}
-        />
-         <Route
-          path="*/dist/*
-          "
-          element={<UserRoute element={<PaymentView />} />}
-        />
-          <Route
-          path="/public/*
-          "
           element={<UserRoute element={<PaymentView />} />}
         />
         <Route path="*" element={<PageNotFound />} />

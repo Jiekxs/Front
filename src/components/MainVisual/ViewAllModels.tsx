@@ -7,10 +7,11 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TextField, Select, MenuItem, InputLabel } from "@mui/material";
+import { TextField, Select, MenuItem, InputLabel, Paper, IconButton, Alert } from '@mui/material';
 import { Controller, useForm } from "react-hook-form";
 import { vestResolver } from "@hookform/resolvers/vest";
 import { FormValidation } from "../../auth/pages/Validations/ModeloValidate";
+import { useState, useEffect } from "react";
 
 const style = {
   position: "absolute" as "absolute",
@@ -38,6 +39,32 @@ export const ViewAllModels = () => {
   const [selectedModeloId, setSelectedModeloId] = React.useState<number | null>(
     null
   );
+
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
+
   const [formData, setFormData] = React.useState<any>({
     nombre: "",
     descripcion: "",
@@ -54,13 +81,15 @@ export const ViewAllModels = () => {
       try {
         const response = await fetch("https://motographixapi.up.railway.app/modelos");
         if (!response.ok) {
+          showAlert('error', 'Error al obtener los modelos');
+
           throw new Error("Error al obtener los modelos");
         }
         const data = await response.json();
         setModelos(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener los modelos:", error);
+        showAlert('error', 'Error al obtener los modelos');
         setLoading(false);
       }
     };
@@ -69,12 +98,14 @@ export const ViewAllModels = () => {
       try {
         const response = await fetch("https://motographixapi.up.railway.app/marcas");
         if (!response.ok) {
+          showAlert('error', 'Error al obtener los marcas');
+
           throw new Error("Error al obtener las marcas");
         }
         const data = await response.json();
         setMarcas(data);
       } catch (error) {
-        console.error("Error al obtener las marcas:", error);
+        showAlert('error', 'Error al obtener los marcas');
       }
     };
 
@@ -117,14 +148,18 @@ export const ViewAllModels = () => {
         }
       );
       if (!response.ok) {
+        showAlert('error', 'Error al eliminar el modelo');
+
         throw new Error("Error al eliminar el modelo");
       }
       const updatedModelos = modelos.filter(
         (modelo) => modelo.idModelo !== modeloIdToDelete
       );
+      showAlert('success', 'Modelo eliminado');
+
       setModelos(updatedModelos);
     } catch (error) {
-      console.error("Error al eliminar el modelo:", error);
+        showAlert('error', 'Error al eliminar el modelo');
     } finally {
       setOpenModal(false);
     }
@@ -152,17 +187,21 @@ export const ViewAllModels = () => {
         }
       );
       if (!response.ok) {
+        showAlert('success', 'Error al actualizar el modelo');
+
         throw new Error("Error al actualizar el modelo");
       }
       const updatedModelo = await response.json();
       const updatedModelos = modelos.map((modelo) =>
         modelo.idModelo === selectedModeloId ? updatedModelo : modelo
       );
+      showAlert('success', 'Modelo actualizado');
+
       setModelos(updatedModelos);
       setOpenEditModal(false);
       reset();
     } catch (error) {
-      console.error("Error al actualizar el modelo:", error);
+      showAlert('success', 'Error al actualizar el modelo');
     }
   };
 
@@ -185,15 +224,18 @@ export const ViewAllModels = () => {
       });
   
       if (!response.ok) {
+        showAlert('error', 'Error al agregar el modelo');
         throw new Error("Error al agregar el modelo");
       }
   
       const newModelo = await response.json();
       setModelos([...modelos, newModelo]);
+      showAlert('success', 'Modelo agregado');
+
       setOpenAddModal(false);
       reset();
     } catch (error) {
-      console.error("Error al agregar el modelo:", error);
+      showAlert('error', 'Error al agregar el modelo');
     }
   };
   
@@ -208,46 +250,57 @@ export const ViewAllModels = () => {
     {
       field: "nombreMarca",
       headerName: "Marca",
-      width: 150,
+      flex:1,
       renderCell: (params: GridRenderCellParams) =>
         params.row.marca.nombreMarca,    
     },
     {
       field: "descripcionMarca",
-      headerName: "Descripcion",
-      width: 150,
+      headerName: "Descripcion Marca",
+      flex:1,
       renderCell: (params: GridRenderCellParams) =>
         params.row.marca.descripcionMarca,
     },
-    { field: "nombre", headerName: "Modelo", width: 130 },
-    { field: "descripcion", headerName: "Descripción", width: 300 },
+    { field: "nombre", headerName: "Modelo", flex:1, },
+    { field: "descripcion", headerName: "Descripción Modelo", flex:1, },
     {
       field: "editar",
       headerName: "Editar",
-      width: 100,
+      flex:0.5,
       renderCell: (params: GridRenderCellParams) => (
-        <button onClick={() => handleEdit(params.row.idModelo)}>
+        <IconButton onClick={() => handleEdit(params.row.idModelo)}>
           <EditIcon />
-        </button>
+        </IconButton>
       ),
     },
     {
       field: "borrar",
       headerName: "Eliminar",
-      width: 100,
+      flex:0.5,
       renderCell: (params: GridRenderCellParams) => (
-        <button
+        <IconButton
           onClick={() => handleDelete(params.row.idModelo, params.row.nombre)}
         >
           <DeleteIcon />
-        </button>
+        </IconButton>
       ),
     },
   ];
 
   return (
     <>
+      <Paper sx={{ width: "50%", margin: "auto", padding:5 }}>
+      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
       <h2>Modelos</h2>
+      <Button variant="contained" color="primary" onClick={handleAdd}>
+        Agregar Modelo
+      </Button>
       {loading ? (
         <Box
           sx={{
@@ -260,7 +313,7 @@ export const ViewAllModels = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ height: 400, width: "100%" }}>
+        <div style={{ height: "auto", width: "100%" }}>
           <DataGrid
             rows={modelos.map((modelo, index) => ({
               ...modelo,
@@ -278,9 +331,8 @@ export const ViewAllModels = () => {
           />
         </div>
       )}
-      <Button variant="contained" color="primary" onClick={handleAdd}>
-        Agregar Modelo
-      </Button>
+     
+      </Paper>
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}

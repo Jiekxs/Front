@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
+import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
 
 interface ModelCardProps {
   model: {
@@ -35,6 +36,9 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
             {/* <Typography variant="body2" style={{ maxHeight: 100, overflowY: 'auto', textAlign: 'justify' }}>
               {model.marca.descripcionMarca}
             </Typography> */}
+             <Grid sx={{width:"100%",height:"100%" , display:"flex", justifyContent:"center",alignItems:"center", background:"gray"}}>
+                <ImageNotSupportedIcon sx={{height:"80px"}} />            
+            </Grid>
           </CardContent>
           <style>
             {`

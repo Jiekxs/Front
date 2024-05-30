@@ -10,6 +10,7 @@ import {
   DialogActions,
   TextField,
   CircularProgress,
+  Paper,
 } from "@mui/material";
 
 interface Address {
@@ -178,7 +179,9 @@ const UserAddresses: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
+    <Paper sx={{ width: "60%", margin: "auto", padding: 5 }}>
+     
+
       <Box my={4}>
         <Typography variant="h4">Direcciones</Typography>
         <Button variant="contained" color="primary" onClick={handleOpenModal}>
@@ -187,18 +190,18 @@ const UserAddresses: React.FC = () => {
         {loading ? (
           <CircularProgress />
         ) : (
-          <Box mt={4} display="flex" flexWrap="wrap">
+          <Box mt={4} display="flex" flexWrap="wrap" alignItems="center">
             {addresses.length === 0 ? (
               <Typography variant="body1">No hay direcciones</Typography>
             ) : (
               addresses.map((address, index) => (
                 <Box
                   key={index}
-                  mt={2}
-                  p={2}
+                  mt={3}
+                  p={3}
                   border="1px solid #ccc"
                   borderRadius={4}
-                  width="calc(33.33% - 16px)"
+                  width="calc(22% - 10px)"
                   marginRight={2}
                   marginBottom={2}
                 >
@@ -208,15 +211,15 @@ const UserAddresses: React.FC = () => {
                   <Typography>{`C.P: ${address.codigoPostal}`}</Typography>
                   <Typography>{`País: ${address.pais}`}</Typography>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => handleEditAddress(address)}
                   >
                     Editar
                   </Button>
                   <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="contained"
+                    color="error"
                     onClick={() => handleOpenDeleteModal(address)}
                   >
                     Eliminar
@@ -337,7 +340,8 @@ const UserAddresses: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+      
+    </Paper>
   );
 };
 

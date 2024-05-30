@@ -4,10 +4,20 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TextField, Select, MenuItem, Box } from "@mui/material";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  Box,
+  Paper,
+  IconButton,
+  Alert,
+} from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { FormValidation } from "../../auth/pages/Validations/EditProductoValidate";
 import { vestResolver } from "@hookform/resolvers/vest";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from '@mui/icons-material/Delete';
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -48,32 +58,66 @@ const ViewAllProducts = () => {
     resolver: vestResolver(FormValidation),
   });
 
+  const [alertData, setAlertData] = useState<{
+    open: boolean;
+    severity: "error" | "warning" | "info" | "success";
+    message: string;
+  }>({
+    open: false,
+    severity: "error",
+    message: "",
+  });
+
+  const showAlert = (
+    severity: "error" | "warning" | "info" | "success",
+    message: string
+  ) => {
+    setAlertData({ open: true, severity, message });
+    setTimeout(() => {
+      setAlertData({ ...alertData, open: false });
+    }, 2000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertData({ ...alertData, open: false });
+  };
+
+
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("https://motographixapi.up.railway.app/productos");
+        const response = await fetch(
+          "https://motographixapi.up.railway.app/productos"
+        );
         if (!response.ok) {
+          showAlert('error', 'Error al obtener los productos');
+
           throw new Error("Error al obtener los productos");
         }
         const data = await response.json();
         setProductos(data);
         setLoading(false);
+
       } catch (error) {
-        console.error("Error al obtener los productos:", error);
+        showAlert('error', 'Error al obtener los productos');
         setLoading(false);
       }
     };
 
     const fetchModelos = async () => {
       try {
-        const response = await fetch("https://motographixapi.up.railway.app/modelos");
+        const response = await fetch(
+          "https://motographixapi.up.railway.app/modelos"
+        );
         if (!response.ok) {
+          showAlert('error', 'Error al obtener los modelos');
+
           throw new Error("Error al obtener los modelos");
         }
         const data = await response.json();
-        setModelos(data); // Definir `modelos` en el estado local
+        setModelos(data); 
       } catch (error) {
-        console.error("Error al obtener los modelos:", error);
+        showAlert('error', 'Error al obtener los modelos');
       }
     };
 
@@ -96,14 +140,18 @@ const ViewAllProducts = () => {
         }
       );
       if (!response.ok) {
+        showAlert('error', 'Error al eliminar el producto');
+
         throw new Error("Error al eliminar el producto");
       }
       const updatedProductos = productos.filter(
         (producto) => producto.idProducto !== productoIdToDelete
       );
+      showAlert('success', 'Producto eliminado');
+
       setProductos(updatedProductos);
     } catch (error) {
-      console.error("Error al eliminar el producto:", error);
+      showAlert('error', 'Error al eliminar el producto');
     } finally {
       setOpenModal(false);
     }
@@ -174,6 +222,8 @@ const ViewAllProducts = () => {
         }
       );
       if (!response.ok) {
+        showAlert('error', 'Error al actualizar el producto');
+
         throw new Error("Error al actualizar el producto");
       }
       const updatedProducto = await response.json();
@@ -181,12 +231,13 @@ const ViewAllProducts = () => {
         producto.idProducto === selectedProductId ? updatedProducto : producto
       );
       setProductos(updatedProductos);
+      showAlert('success', 'Producto actualizado');
 
       // Resetear el formulario y cerrar el modal de edición
       setOpenEditModal(false);
       reset();
     } catch (error) {
-      console.error("Error al actualizar el producto:", error);
+      showAlert('error', 'Error al actualizar el producto');
     }
   };
 
@@ -208,24 +259,30 @@ const ViewAllProducts = () => {
         stock: parseInt(formData.stock),
       };
 
-      const response = await fetch("https://motographixapi.up.railway.app/saveproducto", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProductoData),
-      });
+      const response = await fetch(
+        "https://motographixapi.up.railway.app/saveproducto",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newProductoData),
+        }
+      );
 
       if (!response.ok) {
+        showAlert('error', 'Error al agregar el producto');
+
         throw new Error("Error al agregar el producto");
       }
 
       const newProducto = await response.json();
       setProductos([...productos, newProducto]);
       setOpenAddModal(false);
+      showAlert('success', 'Producto agregado');
       reset();
     } catch (error) {
-      console.error("Error al agregar el producto:", error);
+      showAlert('error', 'Error al agregar el producto');
     }
   };
 
@@ -251,63 +308,72 @@ const ViewAllProducts = () => {
       width: 150,
       renderCell: (params: GridRenderCellParams) => params.row.modelo.nombre,
     },
-    { field: "nombre", headerName: "Producto", width: 130 },
-    { field: "descripcion", headerName: "Descripción", width: 300 },
-    { field: "precio", headerName: "Precio", width: 130 },
-    { field: "stock", headerName: "Stock", width: 130 },
+    { field: "nombre", headerName: "Producto", flex:1 },
+    { field: "descripcion", headerName: "Descripción", flex:1},
+    { field: "precio", headerName: "Precio", flex:0.5 },
+    { field: "stock", headerName: "Stock", flex:0.5 },
     {
       field: "editar",
       headerName: "Editar",
-      width: 100,
+      flex:0.3,
       renderCell: (params: GridRenderCellParams) => (
-        <button onClick={() => handleEdit(params.row.idProducto)}>
-          Editar
-        </button>
+        <IconButton onClick={() => handleEdit(params.row.idProducto)}>
+          <EditIcon />
+        </IconButton>
       ),
     },
     {
       field: "borrar",
       headerName: "Eliminar",
-      width: 100,
+      flex:0.3,
       renderCell: (params: GridRenderCellParams) => (
-        <button
+        <IconButton
           onClick={() => handleDelete(params.row.idProducto, params.row.nombre)}
         >
-          Eliminar
-        </button>
+          <DeleteIcon />
+        </IconButton>
       ),
     },
   ];
 
   return (
     <>
-      <h2>Productos</h2>
-      {loading ? (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <CircularProgress />
-        </div>
-      ) : (
-        <div style={{ height: 400, width: "100%" }}>
-          <DataGrid
-            rows={productos.map((producto, index) => ({
-              ...producto,
-              id: index + 1,
-            }))}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 10,
+      <Paper sx={{ width: "70%", margin: "auto", padding: 5 }}>
+      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+        {alertData.open && (
+          <Alert severity={alertData.severity} onClose={handleCloseAlert}>
+            {alertData.message}
+          </Alert>
+        )}
+      </div>
+        <h2>Productos</h2>
+        <Button variant="contained" color="primary" onClick={handleAdd}>
+          Agregar Producto
+        </Button>
+        {loading ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <div style={{ height: "auto", width: "100%" }}>
+            <DataGrid
+              rows={productos.map((producto, index) => ({
+                ...producto,
+                id: index + 1,
+              }))}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[10,20,30]}
-          />
-        </div>
-      )}
-      <Button variant="contained" color="primary" onClick={handleAdd}>
-        Agregar Producto
-      </Button>
+              }}
+              pageSizeOptions={[10, 20, 30]}
+            />
+          </div>
+        )}
+      </Paper>
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}
@@ -366,7 +432,6 @@ const ViewAllProducts = () => {
                             style={{ margin: 8 }}
                             error={!!formState.errors[field.name]}
                             onChange={(e) => field.onChange(e.target.value)}
-                            
                           >
                             {modelos.map((modelo: any) => (
                               <MenuItem
@@ -438,25 +503,22 @@ const ViewAllProducts = () => {
                     render={({ field }) =>
                       fieldsConfig.name === "idModelo" ? (
                         <div>
-
-                        
-                        <Select
-                          {...field}
-                          variant="outlined"
-                          style={{ margin: 8 }}
-                          error={!!formState.errors[field.name]}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        >
-                          {modelos.map((modelo: any) => (
-                            <MenuItem
-                              key={modelo.idModelo}
-                              value={modelo.idModelo}
-                            >
-                              {modelo.nombre}
-                            </MenuItem>
-                          ))}
-
-                        </Select>
+                          <Select
+                            {...field}
+                            variant="outlined"
+                            style={{ margin: 8 }}
+                            error={!!formState.errors[field.name]}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          >
+                            {modelos.map((modelo: any) => (
+                              <MenuItem
+                                key={modelo.idModelo}
+                                value={modelo.idModelo}
+                              >
+                                {modelo.nombre}
+                              </MenuItem>
+                            ))}
+                          </Select>
                         </div>
                       ) : (
                         <TextField
@@ -471,9 +533,7 @@ const ViewAllProducts = () => {
                           }
                         />
                       )
-                      
                     }
-                    
                   />
                 </div>
               ))}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button, Card } from "@mui/material";
+import { Alert, Button, Card, Paper } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useForm, Controller } from "react-hook-form";
 import { vestResolver } from "@hookform/resolvers/vest";
@@ -20,12 +20,6 @@ const LoginPage = () => {
     message: "",
   });
 
-  const { handleSubmit, formState, control } = useForm({
-    mode: "onChange",
-    reValidateMode: "onChange",
-    resolver: vestResolver(FormValidation),
-  });
-
   const showAlert = (
     severity: "error" | "warning" | "info" | "success",
     message: string
@@ -39,6 +33,12 @@ const LoginPage = () => {
   const handleCloseAlert = () => {
     setAlertData({ ...alertData, open: false });
   };
+
+  const { handleSubmit, formState, control } = useForm({
+    mode: "onChange",
+    reValidateMode: "onChange",
+    resolver: vestResolver(FormValidation),
+  });
 
   const handleCheckUser = async (username: string, password: string) => {
     try {
@@ -91,6 +91,9 @@ const LoginPage = () => {
         if (responseData.rol === "admin") {
           navigate("/admin/dashboard");
         }
+        if (responseData.rol === "mecanico") {
+          navigate("/worker/dashboard");
+        }
 
         if (responseData.rol === "cliente") {
           navigate("/home");
@@ -116,7 +119,7 @@ const LoginPage = () => {
         )}
       </div>
       {/* <img src="../../../public/img/Logo.png" alt="logoWeb" style={{ width: '400px', height: 'auto', background:'black' }}/> */}
-      <Card sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',height:'40vh', width:'50vh'}}>
+      <Paper sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',height:'auto', width:'50vh', padding:5, borderRadius:"25px"}}>
       <h1 style={{ marginBottom: '20px' }}>LOGIN</h1>
       {loggedIn && <h3>Inicio de sesión exitoso</h3>}
       <form onSubmit={handleSubmit(handleLogin)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -162,7 +165,7 @@ const LoginPage = () => {
       <Link to="/register">
         <Button variant="contained" style={{ width: '150px' }}>Registrarse</Button>
       </Link>
-      </Card>
+      </Paper>
       
     </div>
   );

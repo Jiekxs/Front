@@ -6,12 +6,13 @@ import Modal from "@mui/material/Modal";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Alert, TextField } from "@mui/material";
+import { Alert, IconButton, Paper, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import CircularProgress from "@mui/material/CircularProgress";
 import { vestResolver } from "@hookform/resolvers/vest";
 import { FormValidation } from "../../auth/pages/Validations/EditUserValidate";
 import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
+import { Display } from "react-bootstrap-icons";
  
 const style = {
   position: "absolute" as "absolute",
@@ -25,8 +26,6 @@ const style = {
   p: 4,
 };
 
-
-
 export const ViewAllUsers = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,8 +35,8 @@ export const ViewAllUsers = () => {
   const [deletedUserEmail, setDeletedUserEmail] = useState<string>("");
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [openAddModal, setOpenAddModal] = useState<boolean>(false); // New state for add user modal
-  const [userAddresses, setUserAddresses] = useState<any[]>([]); // State to store user addresses
+  const [openAddModal, setOpenAddModal] = useState<boolean>(false); 
+  const [userAddresses, setUserAddresses] = useState<any[]>([]); 
   const [alertData, setAlertData] = useState<{ open: boolean, severity: 'error' | 'warning' | 'info' | 'success', message: string }>({
     open: false,
     severity: 'error',
@@ -69,9 +68,11 @@ export const ViewAllUsers = () => {
           throw new Error("Error al obtener los usuarios");
         }
         const data = await response.json();
-        setUsers(data); // Set users directly from the response
+        setUsers(data); 
         setLoading(false);
       } catch (error) {
+        showAlert('error', 'Error al obtener los usuarios');
+
         console.error("Error al obtener los usuarios:", error);
         setLoading(false);
       }
@@ -107,14 +108,15 @@ export const ViewAllUsers = () => {
   };
 
   const handleCloseAddModal = () => {
-    // Function to handle closing add user modal
+    
     setOpenAddModal(false);
   };
 
   const handleCancelAddUser = () => {
-    handleCloseAddModal(); // Cerrar la modal de agregar usuario
-    reset(); // Resetear los valores de los campos de entrada
+    handleCloseAddModal(); 
+    reset(); 
   };
+
 
   const confirmDelete = async () => {
     try {
@@ -133,6 +135,8 @@ export const ViewAllUsers = () => {
 
       setUsers(users.filter((user) => user.idUsuario !== userIdToDelete));
     } catch (error) {
+      showAlert('error', 'Error al eliminar el usuario');
+
       console.error("Error al eliminar el usuario:", error);
     } finally {
       setOpenModal(false);
@@ -141,9 +145,9 @@ export const ViewAllUsers = () => {
 
   const handleUpdate = async (formData: any) => {
     try {
-      const updatedData = { ...formData, idUsuario: selectedUserId }; // Agregar el ID de usuario al objeto de datos actualizados
+      const updatedData = { ...formData, idUsuario: selectedUserId }; 
 
-      // Enviar los datos actualizados al servidor
+      
       const response = await fetch(
         `https://motographixapi.up.railway.app/updateuser/${selectedUserId}`,
         {
@@ -173,6 +177,8 @@ export const ViewAllUsers = () => {
       setSelectedUserId(null);
       reset();
     } catch (error) {
+      showAlert('error', 'Error al actualizar el usuario');
+
       console.error("Error al actualizar el usuario:", error);
     }
   };
@@ -187,6 +193,8 @@ export const ViewAllUsers = () => {
         body: JSON.stringify(formData),
       });
       if (!response.ok) {
+        showAlert('error', 'Error al agregar el usuario');
+
         throw new Error(`Error al agregar el usuario: ${response.statusText}`);
       }
       if(response.ok){
@@ -241,9 +249,9 @@ export const ViewAllUsers = () => {
       headerName: "Editar",
       flex:0.6,
       renderCell: (params: GridRenderCellParams) => (
-        <button onClick={() => handleEdit(params.row.idUsuario)}>
+        <IconButton onClick={() => handleEdit(params.row.idUsuario)}>
           <EditIcon />
-        </button>
+        </IconButton>
       ),
     },
     {
@@ -251,11 +259,11 @@ export const ViewAllUsers = () => {
       headerName: "Eliminar",
       flex:0.6,
       renderCell: (params: GridRenderCellParams) => (
-        <button
+        <IconButton
           onClick={() => handleDelete(params.row.idUsuario, params.row.email)}
         >
           <DeleteIcon />
-        </button>
+        </IconButton>
       ),
     },
     {
@@ -263,15 +271,16 @@ export const ViewAllUsers = () => {
       headerName: "Direcciones",
       flex:1,
       renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => fetchAddresses(params.row.idUsuario)}>
+        <IconButton onClick={() => fetchAddresses(params.row.idUsuario)}>
         <MapsHomeWorkIcon />
-      </Button>
+      </IconButton>
       ),
     },
   ];
 
   return (
     <>
+    <Paper sx={{ width: "90%", margin: "auto", padding:5 }}>
       <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
         {alertData.open && (
           <Alert severity={alertData.severity} onClose={handleCloseAlert}>
@@ -280,7 +289,7 @@ export const ViewAllUsers = () => {
         )}
       </div>
       <h2>Usuarios</h2>
-      <button onClick={handleAddUser}>Nuevo usuario</button>
+      <Button variant="contained" color="primary" onClick={handleAddUser}>Nuevo usuario</Button>
       {loading ? (
         <Box
           sx={{
@@ -293,21 +302,24 @@ export const ViewAllUsers = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ height: 400, width: "100%" }}>
-          <DataGrid
-            rows={users.map((user, index) => ({ ...user, id: index + 1 }))} // Add unique ids to each row
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 10,
-                },
+        <div style={{ height: "auto", width: "100%" }}>
+        <DataGrid
+          rows={users.map((user, index) => ({ ...user, id: index + 1 }))} 
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
               },
-            }}
-            pageSizeOptions={[10,20,30]}
-          />
-        </div>
+            },
+          }}
+          pageSizeOptions={[10,20,30]}
+        />
+      </div>
+      
+      
       )}
+      </Paper>
       <br />
       <Modal
         open={openModal}

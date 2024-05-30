@@ -27,6 +27,9 @@ import {
   PopoverTrigger,
 } from "@chakra-ui/react";
 import { Download, Upload, XLg } from "react-bootstrap-icons";
+import { Paper } from "@mui/material";
+import Typography from '@mui/material/Typography';
+import zIndex from "@mui/material/styles/zIndex";
 
 interface PaintProps {}
 
@@ -220,7 +223,7 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files?.[0]) {
         const imageURL = URL.createObjectURL(e.target.files[0]);
-        const image = new Image(SIZE / 2, SIZE / 2);
+        const image = new Image();
         image.src = imageURL;
         setImage(image);
       }
@@ -249,9 +252,10 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
   }, []);
 
   return (
-    <Box m={4} sx={{width:"60vw"}}>
-      <Flex justifyContent={"space-between"} alignItems="center">
-        <ButtonGroup size="sm" isAttached variant="solid">
+<Box m={4} sx={{ width: "60vw" }}>
+    <Paper sx={{ width: "90%", margin: "auto", padding: 5 }}>
+    <Flex justifyContent={"space-between"} alignItems="center">
+        <ButtonGroup size="sm" isAttached variant="solid" sx={{ zIndex: 999 }}>
           {PAINT_OPTIONS.map(({ id, label, icon }) => (
             <IconButton
               aria-label={label}
@@ -260,17 +264,17 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
               colorScheme={id === drawAction ? "whatsapp" : undefined}
             />
           ))}
-          <Popover>
+          <Popover >
             <PopoverTrigger>
               <Box
                 bg={color}
-                h={"32px"}
-                w={"32px"}
+                h={"42px"}
+                w={"42px"}
                 borderRadius="sm"
                 cursor="pointer"
               ></Box>
             </PopoverTrigger>
-            <PopoverContent width="300">
+            <PopoverContent width="300" zIndex={900} >
               <PopoverArrow />
               <PopoverCloseButton />
               {/*@ts-ignore*/}
@@ -279,10 +283,11 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
                 onChangeComplete={(selectedColor) =>
                   setColor(selectedColor.hex)
                 }
+                
               />
             </PopoverContent>
           </Popover>
-          <IconButton aria-label={"Clear"} icon={<XLg />} onClick={onClear} />
+          <IconButton aria-label={"Clear"} icon={<XLg />}  onClick={onClear} />
         </ButtonGroup>
         <Flex gap={4} alignItems="center" height="100%">
           <input
@@ -292,36 +297,37 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
             style={{ display: "none" }}
           />
           <Button
-            leftIcon={<Upload />}
+            leftIcon={<Download/>}
             variant="solid"
             onClick={onImportImageClick}
             size="sm"
           >
-            Import Image
+            Importar Imagen
           </Button>
           <Button
-            leftIcon={<Download />}
+            leftIcon={<Upload/>}
             colorScheme="whatsapp"
             variant="solid"
             onClick={onExportClick}
             size="sm"
           >
-            Export
+            Guardar
           </Button>
         </Flex>
       </Flex>
 
       <Box
-        width={`${SIZE}px`}
-        height={`${SIZE}px`}
-        border="1px solid black"
+        zIndex={1}
+        width={`${SIZE *1.55}px`}
+        height={`${SIZE }px`}
+        border="5px solid gray"
+        borderRadius="5px"
         mt={4}
         overflow="auto"
-        marginLeft={"25%"}
       >
         <Stage
           height={SIZE}
-          width={SIZE}
+          width={SIZE*1.55}
           ref={stageRef}
           onMouseUp={onStageMouseUp}
           onMouseDown={onStageMouseDown}
@@ -332,7 +338,7 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
               x={0}
               y={0}
               height={SIZE}
-              width={SIZE}
+              width={SIZE*1.55}
               fill="white"
               id="bg"
             />
@@ -342,8 +348,6 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
                 image={image}
                 x={0}
                 y={0}
-                height={SIZE / 2}
-                width={SIZE / 2}
                 onClick={onShapeClick}
                 draggable={isDraggable}
               />
@@ -405,6 +409,7 @@ export const PaintDemo: React.FC<PaintProps> = React.memo(function Paint({}) {
           </Layer>
         </Stage>
       </Box>
+    </Paper>
     </Box>
   );
 });

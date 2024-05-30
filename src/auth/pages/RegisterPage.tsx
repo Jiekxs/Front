@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, Paper } from '@mui/material';
 import TextField from "@mui/material/TextField";
 import { useForm, Controller } from "react-hook-form";
 import { vestResolver } from "@hookform/resolvers/vest";
@@ -79,7 +79,7 @@ const RegisterPage = () => {
           </Alert>
         )}
       </div>
-      <div
+      <div 
         style={{
           display: "flex",
           flexDirection: "column",
@@ -88,6 +88,8 @@ const RegisterPage = () => {
           minHeight: "90vh",
         }}
       >
+<Paper sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',height:'auto', width:'50vh', padding:5, borderRadius:"25px"}}>
+
         <h1 style={{ marginBottom: "20px" }}>REGISTRO</h1>
         {registered && <h3>Registro exitoso</h3>}
         <form
@@ -185,6 +187,7 @@ const RegisterPage = () => {
             Volver al inicio de sesión
           </Button>
         </Link>
+        </Paper>
       </div>
     </>
   );

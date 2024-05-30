@@ -13,10 +13,12 @@ import {
   AppBar,
   Avatar,
   Badge,
+  Card,
   Container,
   Divider,
   IconButton,
   Menu,
+  Paper,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -34,9 +36,8 @@ import ProductCard from "../Cards/CardProducto";
 import GradeIcon from "@mui/icons-material/Grade";
 import UserReviews from "../MainVisual/ViewUserResenas";
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import PedidosUsuario from "../MainVisual/ViewUserAllOrders";
-import { Paint } from "../../paint/Paint";
 import { PaintDemo } from "../../paint/PaintDemo";
 
 interface CartItem {
@@ -55,7 +56,6 @@ export const MainPage = () => {
     Reseñas: <GradeIcon />,
     Logout: <LogoutIcon color="error" />,
   };
-
 
   const [selectedOption, setSelectedOption] = useState("Main Page");
   const [open, setOpen] = useState(false);
@@ -86,7 +86,7 @@ export const MainPage = () => {
     setLoading(true);
     if (option === "Logout") {
       sessionStorage.clear();
-      window.location.href = "/"; 
+      window.location.href = "/";
     } else if (option === "Marcas") {
       fetchBrands();
       setSelectedOption(option);
@@ -102,7 +102,6 @@ export const MainPage = () => {
     } else if (option === "Diseñar") {
       setSelectedOption(option);
       setOpen(false);
-    
     } else {
       setSelectedOption(option);
       setOpen(false);
@@ -123,38 +122,109 @@ export const MainPage = () => {
         return <PedidosUsuario />;
       case "Marcas":
         return (
-          <div>
+          <Paper
+            sx={{ width: "90%", height: "100%", margin: "auto", padding: 1 }}
+          >
             <h2>Todas las Marcas</h2>
             <Grid container spacing={2}>
               {brands.map((brand) => (
                 <BrandCard key={brand.idMarca} brand={brand} />
               ))}
             </Grid>
-          </div>
+          </Paper>
         );
       case "Modelos":
         return (
-          <div>
+          <Paper
+            sx={{ width: "90%", height: "100%", margin: "auto", padding: 1 }}
+          >
             <h2>Todos los modelos</h2>
             <Grid container spacing={2}>
               {models.map((model) => (
                 <ModelCard key={model.idModelo} model={model} />
               ))}
             </Grid>
-          </div>
+          </Paper>
         );
       case "Diseñar":
-        return <PaintDemo />;
+        return (
+          <Paper
+            sx={{
+              width: "90%",
+              height: "100%",
+              margin: "auto",
+              padding: 2,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Grid sx={{ width: "20%" }} >
+              <Typography variant="h4">INSTRUCCIONES</Typography>
+              <Typography>
+                <ul style={{ listStyleType: "circle" }}>
+                  <li>Importa una imagen</li>
+                  <br />
+                  <li>
+                    El primer boton permite reescalar la imagen importada.
+                  </li>
+                  <br />
+                  <li>Del segundo al cuarto boton permite dibujar formas.</li>
+                  <br />
+                  <li>
+                    El quito boton (lapiz) permite pintar sobre la imagen.
+                  </li>
+                  <br />
+                  <li>
+                    El sexto boton (recuadro) permite seleccionar el color.
+                  </li>
+                  <br />
+                  <li>
+                    El ultimo boton (recuadro) permite limpia todo el lienzo.
+                  </li>
+                </ul>
+              </Typography>
+            </Grid>
+            <PaintDemo />
+            <Grid sx={{ width: "20%" }}>
+           <Typography textAlign={"justify"}>
+              Nos complace anunciar que la opción de personalización de diseños
+              se encuentra actualmente en fase beta/pruebas. 
+              <br />
+              <br />
+              En este momento,estamos trabajando diligentemente en mejorar y perfeccionar esta
+              función para ofrecer una experiencia de usuario excepcional.
+              <br />
+              <br />
+              Durante esta fase inicial, hemos lanzado una demo que permite a
+              los usuarios experimentar con diversas herramientas y opciones de
+              personalización.
+              <br />
+              <br />
+              Aunque aún estamos en proceso de desarrollo,
+              hemos incluido una gama de funcionalidades que permiten a los
+              usuarios explorar y expresar su creatividad de manera
+              significativa. 
+              <br />
+              <br />
+              Nos comprometemos a seguir mejorando esta función
+              añadiendo más herramientas y características mientras recibimos y
+              analizamos los comentarios de nuestros usuarios. 
+           </Typography>
+            </Grid>
+          </Paper>
+        );
       case "Productos":
         return (
-          <div>
+          <Paper
+            sx={{ width: "90%", height: "100%", margin: "auto", padding: 1 }}
+          >
             <h2>Todos los Productos</h2>
             <Grid container spacing={2}>
               {product.map((product) => (
                 <ProductCard key={product.idProducto} product={product} />
               ))}
             </Grid>
-          </div>
+          </Paper>
         );
       case "Reseñas":
         return <UserReviews />;
@@ -203,7 +273,7 @@ export const MainPage = () => {
   const [models, setModels] = useState<any[]>([]);
   const [product, setProducts] = useState<any[]>([]);
   const [resena, setResena] = useState<any[]>([]);
-  const [storedCartUp, setStoredCart] = useState<CartItem[]>([]); 
+  const [storedCartUp, setStoredCart] = useState<CartItem[]>([]);
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -267,7 +337,7 @@ export const MainPage = () => {
         return item;
       })
       .filter((item) => item !== null) as CartItem[]; // Filtrar elementos null y asignar el tipo CartItem
-  
+
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -279,7 +349,7 @@ export const MainPage = () => {
       }
       return item;
     });
-  
+
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -288,13 +358,13 @@ export const MainPage = () => {
     const updatedCart = storedCart.filter(
       (item) => item.idProducto !== productId
     );
-  
+
     setStoredCart(updatedCart);
     sessionStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   return (
-    <>
+    <div>
       <AppBar position="static" sx={{ bgcolor: "black" }}>
         <Container className="nav" maxWidth="xl">
           <Toolbar disableGutters>
@@ -351,7 +421,9 @@ export const MainPage = () => {
             <Button onClick={() => handleOptionClick("Productos")}>
               Productos
             </Button>
-            <Button onClick={() => handleOptionClick("Diseñar")}>Diseñar</Button>
+            <Button onClick={() => handleOptionClick("Diseñar")}>
+              Diseñar
+            </Button>
 
             <Badge badgeContent={totalItemsInCart} color="primary">
               <Button onClick={handleCartIconClick}>
@@ -395,54 +467,63 @@ export const MainPage = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Tu Carrito
             </Typography>
-            <Box sx={{ maxHeight: 650,minHeight: 650, overflow: "auto", overflowX: "hidden" }}>
-            <List>
-              {storedCart.map((item, index) => (
-                <React.Fragment key={index}>
-                  <ListItem
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      paddingY: 1,
-                    }}
-                  >
-                    <ListItemText
-                      primary={`${item.nombre}`}
-                      secondary={`Precio: ${item.precio}€  Cantidad: ${item.cantidad}`}
-                      sx={{ marginBottom: 1 }}
-                    />
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => decreaseQuantity(item.idProducto)}
-                      >
-                        -
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => increaseQuantity(item.idProducto)}
-                      >
-                        +
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => removeFromCart(item.idProducto)}
-                      >
-                        Eliminar
-                      </Button>
-                    </Box>
-                  </ListItem>
-                  {index < storedCart.length - 1 && <Divider sx={{ my: 2 }} />}
-                </React.Fragment>
-              ))}
-            </List>
+            <Box
+              sx={{
+                maxHeight: 650,
+                minHeight: 650,
+                overflow: "auto",
+                overflowX: "hidden",
+              }}
+            >
+              <List>
+                {storedCart.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <ListItem
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        paddingY: 1,
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${item.nombre}`}
+                        secondary={`Precio: ${item.precio}€  Cantidad: ${item.cantidad}`}
+                        sx={{ marginBottom: 1 }}
+                      />
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => decreaseQuantity(item.idProducto)}
+                        >
+                          -
+                        </Button>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => increaseQuantity(item.idProducto)}
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => removeFromCart(item.idProducto)}
+                        >
+                          Eliminar
+                        </Button>
+                      </Box>
+                    </ListItem>
+                    {index < storedCart.length - 1 && (
+                      <Divider sx={{ my: 2 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
             </Box>
-            
+
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Total: {total.toFixed(2)}€
@@ -452,14 +533,13 @@ export const MainPage = () => {
                   variant="outlined"
                   color="secondary"
                   onClick={() => setOpenCartDrawer(false)}
-                  
                 >
                   Cerrar
                 </Button>
                 <Link to="/pago/detalles">
-                <Button variant="contained" color="primary">
-                  Pagar
-                </Button>
+                  <Button variant="contained" color="primary">
+                    Pagar
+                  </Button>
                 </Link>
               </Box>
             </Box>
@@ -468,6 +548,6 @@ export const MainPage = () => {
       </Drawer>
 
       {getContent()}
-    </>
+    </div>
   );
 };

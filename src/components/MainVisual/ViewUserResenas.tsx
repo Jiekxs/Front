@@ -10,6 +10,8 @@ import {
   DialogActions,
   TextField,
   CircularProgress,
+  Paper,
+  Grid,
 } from "@mui/material";
 import Rating from "@mui/material/Rating";
 
@@ -17,10 +19,10 @@ interface Review {
   idResena: number;
   comentario: string;
   calificacion: number;
-  fechaResena:string;
-  producto:{
-        nombre:string;
-  }
+  fechaResena: string;
+  producto: {
+    nombre: string;
+  };
 }
 
 const UserReviews: React.FC = () => {
@@ -33,10 +35,10 @@ const UserReviews: React.FC = () => {
     idResena: 0,
     comentario: "",
     calificacion: 0,
-    fechaResena:"string",
-    producto:{
-        nombre:"string"
-  }
+    fechaResena: "string",
+    producto: {
+      nombre: "string",
+    },
   });
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [selectedReviewToDelete, setSelectedReviewToDelete] =
@@ -77,16 +79,19 @@ const UserReviews: React.FC = () => {
 
   const handleAddReview = async () => {
     try {
-      const response = await fetch("https://motographixapi.up.railway.app/saveresena", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...editedReview,
-          userId: userId,
-        }),
-      });
+      const response = await fetch(
+        "https://motographixapi.up.railway.app/saveresena",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...editedReview,
+            userId: userId,
+          }),
+        }
+      );
       if (!response.ok) {
         throw new Error("Error al agregar la reseña");
       }
@@ -138,7 +143,6 @@ const UserReviews: React.FC = () => {
       setDeleteModalOpen(false);
     }
   };
-  
 
   const handleSaveChanges = async () => {
     try {
@@ -192,98 +196,113 @@ const UserReviews: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box my={4}>
-        <Typography variant="h4">Reseñas</Typography>
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <Box mt={4} display="flex" flexDirection="column">
-            {reviews.map((review, index) => (
-              <Box
-                key={index}
-                mt={2}
-                p={2}
-                border="1px solid #ccc"
-                borderRadius={4}
-              >
-                <Typography variant="h6">{`Reseña ${new Date(review.fechaResena).toISOString().replace('T', '  ').slice(0, -5)}`}</Typography>
-
-                <Typography>Producto:<b>{` ${review.producto.nombre}`}</b></Typography>
-
-                <Typography>{`Comentario: ${review.comentario}`}</Typography>
-
-                <Typography>
-                  Calificación:
-                  <Rating
-                    name="read-only"
-                    value={review.calificacion}
-                    readOnly
-                  />
-                </Typography>{" "}
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleEditReview(review)}
+    <Paper sx={{ width: "80%", margin: "auto", padding: 5 }}>
+      <Container maxWidth="md">
+        <Box my={4}>
+          <Typography variant="h4">Reseñas</Typography>
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <Box mt={4} display="flex" flexDirection="column">
+              {reviews.map((review, index) => (
+                <Box
+                  key={index}
+                  mt={2}
+                  p={2}
+                  border="1px solid #ccc"
+                  borderRadius={4}
                 >
-                  Editar
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleOpenDeleteModal(review)}
-                >
-                  Eliminar
-                </Button>
-              </Box>
-            ))}
-          </Box>
-        )}
-      </Box>
-      <Dialog open={editModalOpen} onClose={handleCloseModal}>
-        <DialogTitle>Editar Reseña</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="comentario"
-            name="comentario"
-            value={editedReview.comentario}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-          <Typography component="legend">Calificación</Typography>
-          <Rating
-            name="simple-controlled"
-            value={ratingValue}
-            onChange={handleRatingChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleSaveChanges} color="primary">
-            Guardar Cambios
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={deleteModalOpen} onClose={handleCloseDeleteModal}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            ¿Estás seguro de que quieres eliminar esta reseña?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteModal} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleConfirmDeleteReview} color="secondary">
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+                  <Typography variant="h6">{`Reseña ${new Date(
+                    review.fechaResena
+                  )
+                    .toISOString()
+                    .replace("T", "  ")
+                    .slice(0, -5)}`}</Typography>
+                  <Typography>
+                    Producto:<b>{` ${review.producto.nombre}`}</b>
+                  </Typography>
+                  <Typography>{`Comentario: ${review.comentario}`}</Typography>
+                  <Typography>
+                    Calificación:
+                    <Rating
+                      name="read-only"
+                      value={review.calificacion}
+                      readOnly
+                    />
+                  </Typography>{" "}
+                  <Grid container sx={{ gap: 5 }}>
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEditReview(review)}
+                      >
+                        Editar
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleOpenDeleteModal(review)}
+                      >
+                        Eliminar
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+        <Dialog open={editModalOpen} onClose={handleCloseModal}>
+          <DialogTitle>Editar Reseña</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="comentario"
+              name="comentario"
+              value={editedReview.comentario}
+              onChange={handleInputChange}
+              fullWidth
+              multiline
+              margin="normal"
+            />
+            <Typography component="legend">Calificación</Typography>
+            <Rating
+              name="simple-controlled"
+              value={ratingValue}
+              onChange={handleRatingChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseModal} color="primary">
+              Cancelar
+            </Button>
+
+            <Button onClick={handleSaveChanges} color="primary">
+              Guardar Cambios
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={deleteModalOpen} onClose={handleCloseDeleteModal}>
+          <DialogTitle>Confirmar Eliminación</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              ¿Estás seguro de que quieres eliminar esta reseña?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDeleteModal} color="primary">
+              Cancelar
+            </Button>
+            <hr />
+            <Button onClick={handleConfirmDeleteReview} color="error">
+              Eliminar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Paper>
   );
 };
 
