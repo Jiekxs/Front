@@ -11,6 +11,7 @@ import {
   FormLabel,
   CircularProgress,
   Paper,
+  Grid,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -299,7 +300,11 @@ const CheckoutView: React.FC = () => {
         </Button>
       </Link>
       {isLoading ? (
-      <CircularProgress />
+      <Grid>
+        <CircularProgress />
+        Procesando
+      </Grid>
+      
     ) : (
       <Button
       variant="contained"

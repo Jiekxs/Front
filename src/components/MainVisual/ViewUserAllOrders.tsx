@@ -7,6 +7,9 @@ import {
   Modal,
   Paper,
   Grid,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 
 interface Pedido {
@@ -36,6 +39,7 @@ const PedidosUsuario: React.FC = () => {
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<DetallePedido[]>(
     []
   );
+  const [filtroEstado, setFiltroEstado] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -46,7 +50,11 @@ const PedidosUsuario: React.FC = () => {
         );
         if (response.ok) {
           const data = await response.json();
-          setPedidos(data);
+          // Ordenar los pedidos por fecha de manera descendente
+          const sortedPedidos = data.sort((a: Pedido, b: Pedido) =>
+            new Date(b.fechaPedido).getTime() - new Date(a.fechaPedido).getTime()
+          );
+          setPedidos(sortedPedidos);
         } else {
           throw new Error("Error al obtener los pedidos");
         }
@@ -75,11 +83,30 @@ const PedidosUsuario: React.FC = () => {
     }
   };
 
+  const handleFiltroEstadoChange = (event: SelectChangeEvent<string>) => {
+    setFiltroEstado(event.target.value );
+  };
+
+
   return (
     <Paper sx={{ width: "95%", margin: "auto", padding: 5 }}>
       <Typography variant="h4" gutterBottom>
         Pedidos
       </Typography>
+      <div style={{ marginBottom: "20px" }}>
+        <Select
+          value={filtroEstado}
+          onChange={handleFiltroEstadoChange}
+          displayEmpty
+          defaultValue=""
+        >
+          <MenuItem value="">Todos</MenuItem>
+          <MenuItem value="pendiente">Pendiente</MenuItem>
+          <MenuItem value="procesando">Procesando</MenuItem>
+          <MenuItem value="enviado">Enviado</MenuItem>
+          <MenuItem value="finalizado">Finalizado</MenuItem>
+        </Select>
+      </div>
       <div
         style={{
           display: "grid",
@@ -87,38 +114,40 @@ const PedidosUsuario: React.FC = () => {
           gap: "20px",
         }}
       >
-        {pedidos.map((pedido) => (
-          <Card key={pedido.idPedido}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                ID del Pedido: {pedido.idPedido}
-              </Typography>
-              <Typography color="textSecondary" gutterBottom>
-                Fecha del Pedido:{" "}
-                {new Date(pedido.fechaPedido).toLocaleString()}
-              </Typography>
-              <Typography color="Highlight" gutterBottom>
-                Estado: {pedido.estado}
-              </Typography>
-              <Typography color="textSecondary" gutterBottom>
-                Total del Pedido: ${pedido.total_pedido}
-              </Typography>
-              <Typography color="textSecondary" gutterBottom>
-                Dirección de Envío: {pedido.direccionEnvio}
-              </Typography>
-              <Typography color="textSecondary" gutterBottom>
-                Forma de Pago: {pedido.formaPago}
-              </Typography>
-              <Typography color="textSecondary" gutterBottom>
-                Fecha de Entrega:{" "}
-                {new Date(pedido.fechaEntrega).toLocaleDateString()}
-              </Typography>
-              <Button onClick={() => handlePedidoClick(pedido.idPedido)}>
-                Ver Detalles
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+        {pedidos
+          .filter(pedido => !filtroEstado || pedido.estado === filtroEstado)
+          .map((pedido) => (
+            <Card key={pedido.idPedido}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  ID del Pedido: {pedido.idPedido}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  Fecha del Pedido:{" "}
+                  {new Date(pedido.fechaPedido).toLocaleString()}
+                </Typography>
+                <Typography color="Highlight" gutterBottom>
+                  Estado: {pedido.estado}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  Total del Pedido: ${pedido.total_pedido}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  Dirección de Envío: {pedido.direccionEnvio}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  Forma de Pago: {pedido.formaPago}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  Fecha de Entrega:{" "}
+                  {new Date(pedido.fechaEntrega).toLocaleDateString()}
+                </Typography>
+                <Button onClick={() => handlePedidoClick(pedido.idPedido)}>
+                  Ver Detalles
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
       </div>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Paper

@@ -21,9 +21,9 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Card sx={{ minHeight: 250, flexGrow: 1 }}>
           <CardContent style={{ overflow: 'hidden' }}>
-          <Typography>
+          {/* <Typography>
                 <img src="../../../dist/img/KTM-Logo.png" alt="" style={{width:250 }}/>
-            </Typography>
+            </Typography> */}
             <Typography variant="h6" component="div">
               {model.nombre}
             </Typography>
